@@ -3,6 +3,7 @@ package direded.game.server.game.gameobject;
 import direded.game.server.game.MapTile;
 import direded.game.server.game.ResourceType;
 import direded.game.server.game.process.CharacterProcess;
+import direded.game.server.model.UserModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,8 +18,8 @@ public class CharacterObject extends GameObject {
 
 	private Map<ResourceType, Integer> resources = new HashMap<>();
 	private CharacterProcess process;
-
 	private MapTile currentMapTile;
+	private UserModel user;
 
 	public static CharacterObject create() {
 		CharacterObject player = new CharacterObject();

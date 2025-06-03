@@ -20,12 +20,7 @@ public class StorageService {
 	private final Gson gson;
 	private final CharacterRepository playerRepository;
 
-	public void registerCharacter(CharacterObject character) {
-		var model = playerRepository.save(toCharacterModel(character));
-		character.setId(model.getId());
-	}
-
-	public void savePlayer(CharacterObject character) {
+	public void saveCharacter(CharacterObject character) {
 		playerRepository.save(toCharacterModel(character));
 	}
 
@@ -70,8 +65,8 @@ public class StorageService {
 			resourcesData.addProperty(resource.getKey().toString(), resource.getValue());
 		}
 		model.setDataJson(gson.toJson(resourcesData));
-
 		model.setName(character.getName());
+		model.setUser(character.getUser());
 
 		return model;
 	}

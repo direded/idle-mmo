@@ -2,20 +2,31 @@ package direded.game.server.game.process;
 
 import direded.game.server.game.MapTile;
 import direded.game.server.game.gameobject.CharacterObject;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CharacterProcessFactory {
 
-	@Getter
-	private final EmptyProcess emptyProcess = new EmptyProcess();
+	public static CharacterProcessFactory instance;
 
-	public LumberjackProcess newLumberjackProcess(CharacterObject c) {
+	@PostConstruct
+	private void onPostConstruct() {
+		instance = this;
+	}
+
+	private final EmptyProcess _emptyProcess = new EmptyProcess();
+
+	public EmptyProcess emptyProcess() {
+		return _emptyProcess;
+	}
+
+	public LumberjackProcess lumberjackProcess(CharacterObject c) {
 		return new LumberjackProcess(c);
 	}
 
-	public MoveToTileProcess newMoveToTileProcess(CharacterObject c, MapTile tile) {
+	public MoveToTileProcess moveToTileProcess(CharacterObject c, MapTile tile) {
 		return new MoveToTileProcess(c, tile);
 	}
 

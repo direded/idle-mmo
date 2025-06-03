@@ -11,6 +11,12 @@ import java.util.UUID;
 @Setter
 public class GameMap {
 
+	public static GameMap instance;
+
+	public GameMap() {
+		instance = this;
+	}
+
 	private final Map<UUID, MapTile> tiles = new HashMap<>();
 	private final Map<String, MapTile> tilesLabel = new HashMap<>();
 

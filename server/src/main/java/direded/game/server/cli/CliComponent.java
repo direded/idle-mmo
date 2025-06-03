@@ -1,5 +1,6 @@
 package direded.game.server.cli;
 
+import direded.game.server.DemoComponent;
 import direded.game.server.game.GameLoop;
 import direded.game.server.game.controller.GameController;
 import direded.game.server.network.NettyServerBootstrapper;
@@ -46,7 +47,7 @@ public class CliComponent {
 				}
 
 				if (in.startsWith("move ")) {
-					gameController.targetTile = in.substring(5);
+					DemoComponent.instance.targetTile = in.substring(5);
 				}
 				Thread.sleep(350);
 			}

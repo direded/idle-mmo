@@ -31,7 +31,7 @@ public class CharacterController {
 		GameUtils.logger.info("trying to move to " + tile.getName());
 		if (MoveToTileProcess.canProcess(c, tile)) {
 			GameUtils.logger.info("moving to " + tile.getName());
-			setProcess(c, characterProcessFactory.newMoveToTileProcess(c, tile));
+			setProcess(c, characterProcessFactory.moveToTileProcess(c, tile));
 		}
 	}
 }

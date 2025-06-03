@@ -1,5 +1,6 @@
 package direded.game.server.game.controller;
 
+import direded.game.server.DemoComponent;
 import direded.game.server.game.GameMap;
 import direded.game.server.game.GameMapConfiguration;
 import direded.game.server.game.gameobject.CharacterObject;
@@ -12,40 +13,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameController {
 
-	private final CharacterController characterController;
-	public String targetTile;
+	private final DemoComponent demo;
 
 	protected final StorageService storage;
 	protected final GameMap gameMap = new GameMap();
 	protected final GameMapConfiguration gameMapConfiguration;
 	private final GameObjectFactory gameObjectFactory;
 
-	protected CharacterObject character;
-
 	public void init() {
 		gameMapConfiguration.setup(gameMap);
 
-		character = storage.findFirstCharacter();
-		if (character == null) {
-			character = gameObjectFactory.newCharacter();
-			character.setName("Dima");
-			character.setCurrentMapTile(gameMap.getTileByLabel("town"));
-			storage.registerCharacter(character);
-		}
+		demo.init();
 	}
 
 	public void finish() {
-		storage.savePlayer(character);
+		demo.finish();
 	}
 
 	public void tick(double delta) {
-		character.getProcess().tick(delta);
+		demo.tick(delta);
 	}
 
 	public void processInput() {
-		if (targetTile != null) {
-			characterController.moveToTile(character, gameMap.getTileByLabel(targetTile));
-			targetTile = null;
-		}
+		demo.processInput();
 	}
 }

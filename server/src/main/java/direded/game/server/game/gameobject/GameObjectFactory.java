@@ -11,7 +11,7 @@ public class GameObjectFactory {
 
 	public CharacterObject newCharacter() {
 		var character = CharacterObject.create();
-		character.setProcess(characterProcessFactory.getEmptyProcess());
+		character.setProcess(characterProcessFactory.emptyProcess());
 		return character;
 	}
 }

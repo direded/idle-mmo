@@ -18,7 +18,6 @@ public class CharacterModel {
 
 	@Id
 	@Column(name = "character_id")
-	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@Column(name = "name")
@@ -26,4 +25,8 @@ public class CharacterModel {
 
 	@Column(name = "data")
 	private String dataJson;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private UserModel user;
 }
