@@ -1,0 +1,22 @@
+services:
+  postgres:
+    container_name: mmo_postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: "game"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./initdb.d:/docker-entrypoint-initdb.d
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U habrpguser -d habrdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    

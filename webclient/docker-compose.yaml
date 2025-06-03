@@ -1,0 +1,8 @@
+services:
+  webclient:
+    container_name: mmo_webclient
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"

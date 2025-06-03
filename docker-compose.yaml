@@ -1,0 +1,4 @@
+include:
+  - database/docker-compose.yaml
+  - server/docker-compose.yaml
+  - webclient/docker-compose.yaml
