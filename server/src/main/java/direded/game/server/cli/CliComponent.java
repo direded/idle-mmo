@@ -1,7 +1,6 @@
 package direded.game.server.cli;
 
 import direded.game.server.game.GameLoop;
-import direded.game.server.game.controller.CharacterController;
 import direded.game.server.game.controller.GameController;
 import direded.game.server.network.NettyServerBootstrapper;
 import lombok.AllArgsConstructor;

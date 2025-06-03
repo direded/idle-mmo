@@ -3,8 +3,6 @@ package direded.game.server.game.gameobject;
 import direded.game.server.game.MapTile;
 import direded.game.server.game.ResourceType;
 import direded.game.server.game.process.CharacterProcess;
-import direded.game.server.game.process.CharacterProcessFactory;
-import direded.game.server.game.process.EmptyProcess;
 import lombok.Getter;
 import lombok.Setter;
 

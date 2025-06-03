@@ -2,7 +2,6 @@ package direded.game.server.game.controller;
 
 import direded.game.server.game.GameMap;
 import direded.game.server.game.GameMapConfiguration;
-import direded.game.server.game.MapTile;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.gameobject.GameObjectFactory;
 import direded.game.server.storage.StorageService;

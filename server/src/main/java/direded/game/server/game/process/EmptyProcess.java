@@ -1,7 +1,5 @@
 package direded.game.server.game.process;
 
-import direded.game.server.game.GameUtils;
-import direded.game.server.game.gameobject.CharacterObject;
 import lombok.Getter;
 import lombok.Setter;
 
