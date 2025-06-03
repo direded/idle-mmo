@@ -10,7 +10,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
-	WebSocketServerHandshaker handshaker;
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -47,7 +46,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	protected void handleHandshake(ChannelHandlerContext ctx, HttpRequest req) {
 		WebSocketServerHandshakerFactory wsFactory =
 				new WebSocketServerHandshakerFactory(getWebSocketURL(req), null, true);
-		handshaker = wsFactory.newHandshaker(req);
+		var handshaker = wsFactory.newHandshaker(req);
 		if (handshaker == null) {
 			WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
 		} else {

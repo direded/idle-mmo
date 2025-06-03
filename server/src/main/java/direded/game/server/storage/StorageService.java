@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import direded.game.server.game.ResourceType;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.model.CharacterModel;
-import direded.game.server.repository.PlayerRepository;
+import direded.game.server.repository.CharacterRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class StorageService {
 	public static final Logger logger = LoggerFactory.getLogger(StorageService.class);
 
 	private final Gson gson;
-	private final PlayerRepository playerRepository;
+	private final CharacterRepository playerRepository;
 
 	public void registerCharacter(CharacterObject character) {
 		var model = playerRepository.save(toCharacterModel(character));
