@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DndContext, useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
+import { DndContext } from '@dnd-kit/core';
+import Window from './components/Window';
 
 // Mock data for demonstration
 const initialCharacter = {
@@ -25,80 +25,13 @@ const availableActions = [
   { id: 3, name: 'Hunt Monsters', description: 'Fight monsters to gain experience and loot' },
 ];
 
-const Window = ({ id, title, children, position, onPositionChange, isVisible, onClose, zIndex, onFocus }) => {
-  const [mounted, setMounted] = useState(false);
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: id,
-  });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    position: 'absolute',
-    left: position.x,
-    top: position.y,
-    display: isVisible ? 'block' : 'none',
-    zIndex: zIndex,
-  };
-
-  if (!mounted) {
-    return null;
-  }
-
-  const handleWindowClick = (e) => {
-    e.stopPropagation();
-    onFocus();
-  };
-
-  return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      className="bg-gray-800 border border-gray-900 w-96 select-none"
-      onClick={handleWindowClick}
-    >
-      <div className="border border-gray-600 w-full h-full">
-        {/* Window Title Bar */}
-        <div 
-          className="bg-gray-700 px-2 py-0.5 flex justify-between items-center select-none"
-        >
-          <div 
-            {...attributes} 
-            {...listeners}
-            className="flex-1 cursor-move select-none text-center"
-          >
-            <span className="text-white font-medium text-xs select-none">{title}</span>
-          </div>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-            className="text-gray-400 hover:text-white transition-colors text-lg font-light cursor-pointer ml-1 select-none px-0.5"
-          >
-            ×
-          </button>
-        </div>
-        
-        {/* Window Content */}
-        <div className="p-2 select-none">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const SidebarItem = ({ title, isVisible, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between text-gray-400 hover:text-white hover:bg-gray-800 select-none"
+    className="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between text-gray-400 hover:text-white hover:bg-gray-800"
   >
-    <span className="select-none">{title}</span>
-    <div className={`w-2 h-2 rounded-full transition-colors ${isVisible ? 'bg-white' : 'bg-gray-500'} select-none`} />
+    <span>{title}</span>
+    <div className={`w-2 h-2 rounded-full transition-colors ${isVisible ? 'bg-white' : 'bg-gray-500'}`} />
   </button>
 );
 
@@ -214,21 +147,21 @@ export default function GameWindowsPage() {
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="min-h-screen bg-gray-900 flex select-none">
+      <div className="min-h-screen bg-gray-900 flex">
         {/* Sidebar */}
-        <div className="w-48 bg-gray-800 border-r border-gray-700 flex flex-col select-none">
+        <div className="w-48 bg-gray-800 border-r border-gray-700 flex flex-col">
           {/* Time and Date */}
-          <div className="p-4 border-b border-gray-700 select-none">
-            <div className="text-white text-xl font-medium select-none">
+          <div className="p-4 border-b border-gray-700">
+            <div className="text-white text-xl font-medium">
               {formatTime(currentTime)}
             </div>
-            <div className="text-gray-400 text-sm select-none">
+            <div className="text-gray-400 text-sm">
               {formatDate(currentTime)}
             </div>
           </div>
           
           {/* Window Navigation */}
-          <div className="flex-1 py-2 select-none">
+          <div className="flex-1 py-2">
             <SidebarItem 
               title="Character Info" 
               isVisible={windowVisibility.character}
@@ -248,7 +181,7 @@ export default function GameWindowsPage() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 relative overflow-hidden select-none">
+        <div className="flex-1 relative overflow-hidden">
           {/* Character Info Window */}
           <Window 
             id="character" 
@@ -260,26 +193,26 @@ export default function GameWindowsPage() {
             zIndex={windowZIndices.character}
             onFocus={() => focusWindow('character')}
           >
-            <div className="space-y-2 select-none">
-              <div className="flex justify-between select-none">
-                <span className="text-gray-300 select-none">Name:</span>
-                <span className="text-white font-medium select-none">{character.name}</span>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Name:</span>
+                <span className="text-white font-medium">{character.name}</span>
               </div>
-              <div className="flex justify-between select-none">
-                <span className="text-gray-300 select-none">Level:</span>
-                <span className="text-white font-medium select-none">{character.level}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Level:</span>
+                <span className="text-white font-medium">{character.level}</span>
               </div>
-              <div className="flex justify-between select-none">
-                <span className="text-gray-300 select-none">Experience:</span>
-                <span className="text-white font-medium select-none">{character.experience}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Experience:</span>
+                <span className="text-white font-medium">{character.experience}</span>
               </div>
-              <div className="flex justify-between select-none">
-                <span className="text-gray-300 select-none">Health:</span>
-                <span className="text-white font-medium select-none">{character.health}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Health:</span>
+                <span className="text-white font-medium">{character.health}</span>
               </div>
-              <div className="flex justify-between select-none">
-                <span className="text-gray-300 select-none">Gold:</span>
-                <span className="text-white font-medium select-none">{character.gold}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Gold:</span>
+                <span className="text-white font-medium">{character.gold}</span>
               </div>
             </div>
           </Window>
@@ -295,21 +228,21 @@ export default function GameWindowsPage() {
             zIndex={windowZIndices.inventory}
             onFocus={() => focusWindow('inventory')}
           >
-            <div className="overflow-x-auto select-none">
-              <table className="min-w-full select-none">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
                 <thead>
-                  <tr className="bg-gray-700 select-none">
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase select-none">Item</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase select-none">Weight</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase select-none">Count</th>
+                  <tr className="bg-gray-700">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Item</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Weight</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Count</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700 select-none">
+                <tbody className="divide-y divide-gray-700">
                   {inventory.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-700 transition-colors select-none">
-                      <td className="px-4 py-2 text-gray-300 select-none">{item.name}</td>
-                      <td className="px-4 py-2 text-gray-300 select-none">{item.weight} kg</td>
-                      <td className="px-4 py-2 text-gray-300 select-none">{item.count}</td>
+                    <tr key={item.id} className="hover:bg-gray-700 transition-colors">
+                      <td className="px-4 py-2 text-gray-300">{item.name}</td>
+                      <td className="px-4 py-2 text-gray-300">{item.weight} kg</td>
+                      <td className="px-4 py-2 text-gray-300">{item.count}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -328,15 +261,15 @@ export default function GameWindowsPage() {
             zIndex={windowZIndices.actions}
             onFocus={() => focusWindow('actions')}
           >
-            <div className="space-y-2 select-none">
+            <div className="space-y-2">
               {availableActions.map((action) => (
                 <button
                   key={action.id}
                   onClick={() => handleAction(action)}
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white rounded p-2 text-left transition-colors border border-gray-600 select-none"
+                  className="w-full bg-gray-700 hover:bg-gray-600 text-white rounded p-2 text-left transition-colors border border-gray-600"
                 >
-                  <h3 className="font-semibold select-none">{action.name}</h3>
-                  <p className="text-sm text-gray-300 select-none">{action.description}</p>
+                  <h3 className="font-semibold">{action.name}</h3>
+                  <p className="text-sm text-gray-300">{action.description}</p>
                 </button>
               ))}
             </div>
