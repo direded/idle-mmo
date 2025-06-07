@@ -13,7 +13,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
 		if (msg instanceof HttpRequest) {
 
 			HttpRequest httpRequest = (HttpRequest) msg;
@@ -28,7 +27,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 					"WebSocket".equalsIgnoreCase(headers.get(HttpHeaderNames.UPGRADE))) {
 
 				//Adding new handler to the existing pipeline to handle WebSocket Messages
-				ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
+				ctx.pipeline().replace(this, "initialWebsocketHandler", new InitialWebSocketHandler());
 
 				System.out.println("WebSocketHandler added to the pipeline");
 				System.out.println("Opened Channel : " + ctx.channel());

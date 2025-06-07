@@ -3,7 +3,6 @@ package direded.game.server;
 import direded.game.server.game.GameMap;
 import direded.game.server.game.controller.CharacterController;
 import direded.game.server.game.gameobject.CharacterObject;
-import direded.game.server.game.gameobject.GameObjectFactory;
 import direded.game.server.game.process.CharacterProcessFactory;
 import direded.game.server.model.UserModel;
 import direded.game.server.model.UserSessionModel;
@@ -12,7 +11,6 @@ import direded.game.server.repository.UserSessionRepository;
 import direded.game.server.storage.StorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -84,7 +82,8 @@ public class DemoComponent {
 
 	private UserSessionModel createUserSession(UserModel user) {
 		var s = new UserSessionModel();
-		s.setToken(RandomStringUtils.secure().nextAlphanumeric(64));
+//		s.setToken(RandomStringUtils.secure().nextAlphanumeric(64));
+		s.setToken("test");
 		user.setSession(s);
 		return s;
 	}
