@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DndContext } from '@dnd-kit/core';
-import Window from './components/Window';
+import Window from '../components/Window';
 
 // Mock data for demonstration
 const initialCharacter = {
@@ -387,7 +387,7 @@ export default function GameWindowsPage() {
 								<button
 									key={action.id}
 									onClick={() => handleAction(action)}
-									className="w-full bg-gray-700 hover:bg-gray-600 text-white rounded p-2 text-left transition-colors border border-gray-600"
+									className="w-full bg-gray-700 hover:bg-gray-600 text-white p-2 text-left transition-colors border border-gray-600"
 								>
 									<h3 className="font-semibold">{action.name}</h3>
 									<p className="text-sm text-gray-300">{action.description}</p>
@@ -415,7 +415,7 @@ export default function GameWindowsPage() {
 										{setting.options.map((option) => (
 											<button
 												key={option}
-												className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+												className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white transition-colors"
 											>
 												{option}
 											</button>

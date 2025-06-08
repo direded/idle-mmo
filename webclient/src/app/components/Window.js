@@ -39,26 +39,24 @@ const Window = ({ id, title, children, position, onPositionChange, isVisible, on
 		<div 
 			ref={setNodeRef} 
 			style={style} 
-			className="bg-gray-800 border border-gray-900 cursor-move"
+			className="bg-gray-800 border border-gray-700 cursor-move"
 			onClick={handleWindowClick}
 		>
 			{/* Window Title Bar */}
 			<div 
 				{...attributes} 
 				{...listeners}
-				className="bg-gray-700 px-2 py-1 flex justify-between items-center" style={{ paddingTop: '6px' }}
+				className="bg-gray-700 px-2 py-0.5 flex justify-between items-center"
 			>
-				<div 
-					className="flex-1 text-center"
-				>
-					<span className="text-white font-medium text-sm">{title}</span>
+				<div className="flex-1 text-center">
+					<span className="text-white font-medium text-xs">{title}</span>
 				</div>
 				<button 
 					onClick={(e) => {
 						e.stopPropagation();
 						onClose();
 					}}
-					className="text-gray-400 hover:text-white transition-colors font-light cursor-pointer ml-1 px-0.5"
+					className="text-gray-400 hover:text-white transition-colors font-light cursor-pointer ml-1 px-0.5 text-lg"
 				>
 					×
 				</button>

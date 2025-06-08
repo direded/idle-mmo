@@ -22,7 +22,7 @@ export default function TokenPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-900 flex items-center justify-center">
-			<div className="bg-gray-800 border border-gray-700 p-8 w-full max-w-md">
+			<div className="bg-gray-800 border-2 border-gray-700 p-8 w-full max-w-md">
 				<h1 className="text-2xl font-bold text-white mb-6 text-center">Enter Game Token</h1>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
@@ -34,7 +34,7 @@ export default function TokenPage() {
 								setError('');
 							}}
 							placeholder="Enter your token"
-							className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+							className="w-full px-4 py-2 bg-gray-700 border-2 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
 						/>
 						{error && (
 							<p className="mt-2 text-red-500 text-sm">{error}</p>
@@ -46,7 +46,7 @@ export default function TokenPage() {
 							id="keepLoggedIn"
 							checked={keepLoggedIn}
 							onChange={(e) => setKeepLoggedIn(e.target.checked)}
-							className="w-4 h-4 bg-gray-700 border-gray-600 rounded focus:ring-gray-500"
+							className="w-4 h-4 bg-gray-700 border-2 border-gray-600 focus:ring-gray-500"
 						/>
 						<label htmlFor="keepLoggedIn" className="ml-2 text-sm text-gray-300">
 							Keep me logged in
@@ -54,7 +54,7 @@ export default function TokenPage() {
 					</div>
 					<button
 						type="submit"
-						className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition-colors"
+						className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 border-2 border-gray-600 transition-colors"
 					>
 						Start Game
 					</button>
