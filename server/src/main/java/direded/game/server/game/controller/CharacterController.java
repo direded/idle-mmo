@@ -34,4 +34,8 @@ public class CharacterController {
 			setProcess(c, characterProcessFactory.moveToTileProcess(c, tile));
 		}
 	}
+
+	public void tick(CharacterObject c, double delta) {
+		c.getProcess().tick(delta);
+	}
 }

@@ -8,7 +8,7 @@ import direded.game.server.model.UserModel;
 import direded.game.server.model.UserSessionModel;
 import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
-import direded.game.server.storage.StorageService;
+import direded.game.server.storage.CharacterStorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,8 +25,7 @@ public class DemoComponent {
 
 	public String targetTile;
 
-	protected final StorageService storage;
-	protected final GameObjectFactory gameObjectFactory;
+	protected final CharacterStorageService storage;
 	protected final CharacterController characterController;
 
 	protected CharacterObject character;
@@ -48,29 +47,14 @@ public class DemoComponent {
 		storage.saveCharacter(character);
 	}
 
-	public void tick(double delta) {
-		character.getProcess().tick(delta);
-	}
-
-	public void finish() {
-		storage.saveCharacter(character);
-	}
-
-	public void processInput() {
-		if (targetTile != null) {
-			characterController.moveToTile(character, GameMap.instance.getTileByLabel(targetTile));
-			targetTile = null;
-		}
-	}
-
-	private UserModel createUser() {
+	public UserModel createUser() {
 		var a = new UserModel();
 		a.setId(UUID.randomUUID());
 		a.setName("direded");
 		return a;
 	}
 
-	private CharacterObject createCharacter(UserModel user) {
+	public CharacterObject createCharacter(UserModel user) {
 		var c = CharacterObject.create();
 		c.setId(UUID.randomUUID());
 		c.setName("Dima");
@@ -80,7 +64,7 @@ public class DemoComponent {
 		return c;
 	}
 
-	private UserSessionModel createUserSession(UserModel user) {
+	public UserSessionModel createUserSession(UserModel user) {
 		var s = new UserSessionModel();
 //		s.setToken(RandomStringUtils.secure().nextAlphanumeric(64));
 		s.setToken("test");

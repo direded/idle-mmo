@@ -13,9 +13,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		if (msg instanceof HttpRequest) {
-
-			HttpRequest httpRequest = (HttpRequest) msg;
+		if (msg instanceof HttpRequest httpRequest) {
 
 			System.out.println("Http Request Received");
 

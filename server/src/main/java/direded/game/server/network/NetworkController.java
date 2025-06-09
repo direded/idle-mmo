@@ -3,13 +3,19 @@ package direded.game.server.network;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import direded.game.server.game.UserClient;
+import direded.game.server.game.events.GameEvent;
+import direded.game.server.game.events.UserJoinEvent;
+import direded.game.server.game.events.UserLeaveEvent;
 import direded.game.server.model.UserModel;
+import direded.game.server.network.clientpacket.ClientPacket;
 import direded.game.server.network.handler.ServerPacketHandler;
-import direded.game.server.network.handler.TestPacketHandler;
-import direded.game.server.network.packet.ServerPacket;
+import direded.game.server.network.serverpacket.CommonSv;
+import direded.game.server.network.serverpacket.ServerPacket;
+import direded.game.server.network.serverpacket.TestSv;
 import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,9 +38,9 @@ public class NetworkController {
 	private final LinkedHashMap<Channel, UserClient> channelUserClientMap = new LinkedHashMap<>();
 	private final Gson gson;
 
-	private final Map<Integer, ServerPacketHandler<?>> serverPacketHandlers = new HashMap<>();
+	private final Map<PacketType, ServerPacketHandler<?>> serverPacketHandlers = new HashMap<>();
 	@Getter(AccessLevel.NONE)
-	private final List<ServerPacket> receivedPackets = new ArrayList<>();
+	private final Queue<ServerPacket> receivedPackets = new LinkedList<>();
 
 	@PostConstruct
 	private void onPostConstruct() {
@@ -42,12 +48,13 @@ public class NetworkController {
 		registerServerPacketHandlers();
 	}
 
-	private void registerServerPacketHandler(ServerPacketHandler<?> handler) {
-		serverPacketHandlers.put(handler.getTypeId(), handler);
+	private void registerServerPacketHandler(PacketType type, ServerPacketHandler<?> handler) {
+		serverPacketHandlers.put(type, handler);
 	}
 
 	private void registerServerPacketHandlers() {
-		registerServerPacketHandler(new TestPacketHandler(100));
+		registerServerPacketHandler(PacketType.TEST_SV, TestSv::parse);
+		registerServerPacketHandler(PacketType.COMMON_SV, CommonSv::parse);
 	}
 
 	public UserClient registerClient(final Channel channel, String token) {
@@ -57,11 +64,13 @@ public class NetworkController {
 		}
 		var client = new UserClient(user, channel);
 		channelUserClientMap.put(channel, client);
+		new UserJoinEvent(client).register();
 		return client;
 	}
 
 	public void unregisterClient(final Channel channel) {
-		channelUserClientMap.remove(channel);
+		var user = channelUserClientMap.remove(channel);
+		new UserLeaveEvent(user).register();
 	}
 
 	public SequencedCollection<UserClient> getClients() {
@@ -89,18 +98,35 @@ public class NetworkController {
 			return;
 
 		var handler = serverPacketHandlers.get(json.get("type").getAsInt());
-		if (handler != null) {
-			var packet = handler.parse(message);
-			packet.setUser(client);
-			synchronized (receivedPackets) {
-				receivedPackets.add(packet);
-			}
+		if (handler == null) return;
+		var packet = handler.parse(json);
+		if (packet == null) return;
+		packet.setUser(client);
+		synchronized (receivedPackets) {
+			receivedPackets.add(packet);
 		}
 	}
 
-	public List<ServerPacket> getReceivedPackets() {
+	public void send(UserClient user, ClientPacket packet) {
+		send(user.getChannel(), packet);
+	}
+
+	public void send(Channel channel, ClientPacket packet) {
+		var json = packet.serialize();
+		json.addProperty("type", packet.getPacketType().getValue());
+		channel.writeAndFlush(new TextWebSocketFrame(gson.toJson(json)));
+	}
+
+	public void processPackets() {
+		ServerPacket packet;
 		synchronized (receivedPackets) {
-			return new ArrayList<>(receivedPackets);
+			packet = receivedPackets.poll();
+		}
+		while (packet != null) {
+			packet.process();
+			synchronized (receivedPackets) {
+				packet = receivedPackets.poll();
+			}
 		}
 	}
 }

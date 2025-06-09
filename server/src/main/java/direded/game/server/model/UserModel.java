@@ -1,6 +1,5 @@
 package direded.game.server.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class UserModel {
 	@JoinColumn(name = "session_id")
 	private UserSessionModel session;
 
-	@OneToMany(mappedBy = "user")
-	private Set<CharacterModel> character;
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private Set<CharacterModel> characters;
 
 }

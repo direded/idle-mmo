@@ -1,8 +1,10 @@
 package direded.game.server.game.process;
 
+import com.google.gson.JsonObject;
 import direded.game.server.game.GameUtils;
 import direded.game.server.game.ResourceType;
 import direded.game.server.game.gameobject.CharacterObject;
+import direded.game.server.network.clientpacket.UpdateCharacterCl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,9 +25,18 @@ public class LumberjackProcess extends CharacterProcess {
 		time += delta;
 		if (time >= 2) {
 			GameUtils.logger.info("lumberjack inc");
-			owner.incResource(ResourceType.WOOD, 10);
+			character.incResource(ResourceType.WOOD, 10);
+
+			var packet = new UpdateCharacterCl(character);
+			var data = packet.getData();
+			var resourcesJson = new JsonObject();
+			resourcesJson.addProperty("wood", character.getResource(ResourceType.WOOD));
+			data.add("resources", resourcesJson);
+			character.send(packet);
+
 			time -= 2;
 		}
+		time %= 2;
 	}
 
 }

@@ -56,4 +56,9 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		NetworkController.instance.unregisterClient(ctx.channel());
 	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		cause.printStackTrace();
+	}
 }

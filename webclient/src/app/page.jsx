@@ -1,24 +1,36 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useContext, useEffect } from 'react';
+import { redirect, useRouter } from 'next/navigation';
+import { WsContext } from '@/context/WsContext'
+import { NetworkController } from '@/game/NetworkController';
+
 
 export default function TokenPage() {
+	/** @type {[WebSocket]} */
+	const [socket, setSocket] = useContext(WsContext)
 	const [token, setToken] = useState('');
 	const [error, setError] = useState('');
 	const [keepLoggedIn, setKeepLoggedIn] = useState(false);
 	const router = useRouter();
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (!token.trim()) {
 			setError('Please enter your token');
 			return;
 		}
-		// Here you would typically validate the token
-		// For now, we'll just redirect to the game
-		router.push('/game-windows');
+
+		if (socket == null) {
+			let s = NetworkController.initSocket(token.trim(), () => {
+					setError('Cannot establish connection with server');
+					setSocket(null);
+				});
+			setSocket(s);
+		}
+		// router.push('/game-windows');
 	};
+
 
 	return (
 		<div className="min-h-screen bg-gray-900 flex items-center justify-center">

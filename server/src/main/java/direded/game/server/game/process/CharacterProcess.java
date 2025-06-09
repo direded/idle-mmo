@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class CharacterProcess {
 
-	protected final CharacterObject owner;
+	protected final CharacterObject character;
 
 	public abstract String getName();
 	public abstract void tick(double delta);

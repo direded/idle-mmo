@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Tile from '../components/Tile';
+import Tile from '../../components/Tile';
 
 // Mock data for demonstration
 const initialCharacter = {

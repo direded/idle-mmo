@@ -3,7 +3,8 @@ package direded.game.server.network;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import direded.game.server.game.UserClient;
-import direded.game.server.repository.UserSessionRepository;
+import direded.game.server.network.clientpacket.TokenAcceptedCl;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.*;
@@ -18,22 +19,35 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof TextWebSocketFrame) {
 			System.out.println("Registering client..");
 			var jsonString = ((TextWebSocketFrame) msg).text();
-			var json = gson.fromJson(jsonString, JsonObject.class);
+			JsonObject json;
+			try {
+				System.out.println("Trying");
+				json = gson.fromJson(jsonString, JsonObject.class);
+			} catch(Exception ignored) {
+				System.out.println("Exception: " + ignored);
+				abortConnection(ctx.channel());
+				return;
+			}
 			if (!json.has("token")) {
+				abortConnection(ctx.channel());
 				return;
 			}
 			var token = json.get("token").getAsString();
 			var client = NetworkController.instance.registerClient(ctx.channel(), token);
 			if (client != null) {
 				System.out.println("Client registered!");
-				ctx.channel().writeAndFlush(new TextWebSocketFrame(createSuccessAnswer(client)));
+				new TokenAcceptedCl(client.getModel()).send(client);
 				ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
 			}
 		}
 	}
 
-	private String createSuccessAnswer(UserClient client) {
-		var username = client.getUser().getName();
-		return "{\"success\":true,\"username\":\"" + username + "\"}";
+	private void abortConnection(Channel channel) {
+		channel.close();
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		cause.printStackTrace();
 	}
 }

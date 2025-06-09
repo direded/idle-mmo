@@ -29,8 +29,8 @@ public class MoveToTileProcess extends CharacterProcess {
 
 	public void init() {
 		time = 0;
-		var distance = owner.getCurrentMapTile().getDistanceTo(targetTile);
-		var moveSpeed = owner.getMoveSpeed();
+		var distance = character.getCurrentMapTile().getDistanceTo(targetTile);
+		var moveSpeed = character.getMoveSpeed();
 		totalTime = distance / moveSpeed;
 	}
 
@@ -39,8 +39,8 @@ public class MoveToTileProcess extends CharacterProcess {
 		GameUtils.logger.info(name);
 		time += delta;
 		if (time >= totalTime) {
-			owner.setCurrentMapTile(targetTile);
-			CharacterController.instance.setProcess(owner, new EmptyProcess());
+			character.setCurrentMapTile(targetTile);
+			CharacterController.instance.setProcess(character, new EmptyProcess());
 		}
 	}
 }

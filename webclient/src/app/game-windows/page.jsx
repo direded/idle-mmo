@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { redirect } from 'next/navigation';
 import { DndContext } from '@dnd-kit/core';
-import Window from '../components/Window';
+import Window from '../../components/Window';
+import { WsContext } from '@/context/WsContext'
 
 // Mock data for demonstration
 const initialCharacter = {
@@ -49,7 +51,14 @@ export default function GameWindowsPage() {
 	const [selectedAction, setSelectedAction] = useState(null);
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [activeWindow, setActiveWindow] = useState('character');
-	
+	const [socket] = useContext(WsContext)
+
+	useEffect(() => {
+		if (localStorage.getItem('sessionToken') == null) {
+			redirect('/')
+		}
+	}, [])
+
 	// Window positions state
 	const [windowPositions, setWindowPositions] = useState(() => {
 		if (typeof window !== 'undefined') {
