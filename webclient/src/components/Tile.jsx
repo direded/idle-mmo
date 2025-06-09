@@ -1,9 +1,37 @@
-export default function Tile({ children, title, className }) {
+'use client';
+
+import { useState } from 'react';
+
+export default function Tile({ 
+	title, 
+	children, 
+	className = '',
+	isCollapsible = true
+}) {
+	const [isCollapsed, setIsCollapsed] = useState(false);
+
 	return (
-		<div className={`bg-gray-800 border-gray-700 ${className} flex flex-col`}>
-			<h2 className="text-l font-semibold m-2 mb-1 mt-1 text-white">{title}</h2>
-			<div className="flex-1 overflow-auto scrollbar-a">
-				{children}
+		<div className={`bg-gray-800 rounded shadow-lg overflow-hidden border border-gray-700 ${className}`}>
+			<div 
+				className="h-8 bg-gray-700 flex items-center px-4 cursor-pointer select-none"
+				onClick={() => isCollapsible && setIsCollapsed(!isCollapsed)}
+			>
+				<div className="text-white text-sm font-medium flex items-center gap-2">
+					{isCollapsible && (
+						<span className="text-gray-400">
+							{isCollapsed ? '▼' : '▲'}
+						</span>
+					)}
+					{title}
+				</div>
+			</div>
+			<div 
+				className={`transition-[height] duration-200 ease-in-out overflow-hidden`}
+				style={{ height: isCollapsed ? '0px' : 'auto' }}
+			>
+				<div className="p-4">
+					{children}
+				</div>
 			</div>
 		</div>
 	);

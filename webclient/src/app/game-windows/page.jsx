@@ -3,7 +3,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { redirect } from 'next/navigation';
 import { DndContext } from '@dnd-kit/core';
-import Window from '../../components/Window';
+import Window from '@/components/Window';
 import { WsContext } from '@/context/WsContext'
 
 // Mock data for demonstration
