@@ -16,17 +16,24 @@ export default function TokenPage() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		console.log('submit')
 		if (!token.trim()) {
 			setError('Please enter your token');
 			return;
 		}
 
-		if (socket == null) {
-			let s = NetworkController.initSocket(token.trim(), () => {
-					setError('Cannot establish connection with server');
+		if (!NetworkController.isTokenValid) {
+			let s = NetworkController.initSocket(token.trim(), '/game',
+				() => {
+					console.log('Successful connected')
+					setSocket(s);
+				},
+				(msg) => {
+					setError(msg);
 					setSocket(null);
 				});
-			setSocket(s);
+		} else {
+			redirect('/game')
 		}
 		// router.push('/game-windows');
 	};

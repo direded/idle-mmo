@@ -1,73 +1,45 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
+import { useState } from 'react';
+import Image from 'next/image';
 
-const Window = ({ id, title, children, position, onPositionChange, isVisible, onClose, zIndex, onFocus }) => {
-	const [mounted, setMounted] = useState(false);
-	const { attributes, listeners, setNodeRef, transform } = useDraggable({
-		id: id,
-	});
+export default function Window({
+	title,
+	children,
+	className = '',
+	isCollapsible = true,
+	headerIcon, // To add icons to the header
+	specialBorder = false // For the yellow/black border
+}) {
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	useEffect(() => {
-		setMounted(true);
-	}, []);
-
-	const style = {
-		transform: CSS.Translate.toString(transform),
-		position: 'absolute',
-		left: `${position.x}px`,
-		top: `${position.y}px`,
-		display: isVisible ? 'block' : 'none',
-		zIndex: zIndex,
-		maxWidth: '90vw',
-		maxHeight: '90vh',
-		width: 'min(384px, 90vw)',
-	};
-
-	if (!mounted) {
-		return null;
-	}
-
-	const handleWindowClick = (e) => {
-		e.stopPropagation();
-		onFocus();
-	};
+	const headerClasses = `h-8 bg-green-600 flex items-center px-2 py-1 cursor-pointer select-none border-b-2 border-gray-900`; // Green header
+	const bodyClasses = `bg-gray-100 text-gray-800 p-2 overflow-auto`; // Light gray body, overflow for scrollbars
 
 	return (
-		<div 
-			ref={setNodeRef} 
-			style={style} 
-			className="bg-gray-800 border border-gray-700 cursor-move"
-			onClick={handleWindowClick}
-		>
-			{/* Window Title Bar */}
-			<div 
-				{...attributes} 
-				{...listeners}
-				className="bg-gray-700 px-2 py-0.5 flex justify-between items-center"
+		<div className={`relative rounded-sm shadow-md overflow-hidden ${className} ${specialBorder ? 'border-4 border-dashed border-yellow-500' : 'border-2 border-gray-900'}`}>
+			<div
+				className={headerClasses}
+				onClick={() => isCollapsible && setIsCollapsed(!isCollapsed)}
 			>
-				<div className="flex-1 text-center">
-					<span className="text-white font-medium text-xs">{title}</span>
+				<div className="flex items-center gap-1">
+					{headerIcon && <Image src={headerIcon} alt="icon" width={16} height={16} className="w-4 h-4" />}
+					<span className="text-white text-sm font-semibold">{title}</span>
+					{isCollapsible && (
+						<span className="text-gray-900 ml-auto mr-1 text-xs">
+							{isCollapsed ? '▼' : '▲'}
+						</span>
+					)}
 				</div>
-				<button 
-					onClick={(e) => {
-						e.stopPropagation();
-						onClose();
-					}}
-					className="text-gray-400 hover:text-white transition-colors font-light cursor-pointer ml-1 px-0.5 text-lg"
-				>
-					×
-				</button>
 			</div>
-			
-			{/* Window Content */}
-			<div className="p-2 overflow-auto" style={{ maxHeight: 'calc(90vh - 32px)' }}>
-				{children}
+			<div
+				className={`transition-[height] duration-200 ease-in-out overflow-hidden`}
+				style={{ height: isCollapsed ? '0px' : 'auto' }}
+			>
+				<div className={bodyClasses}>
+					{children}
+				</div>
 			</div>
 		</div>
 	);
-};
-
-export default Window; 
+} 

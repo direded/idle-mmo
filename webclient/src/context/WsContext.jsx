@@ -2,7 +2,7 @@
 
 import { NetworkController } from '@/game/NetworkController'
 import { createContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export const WsContext = createContext(undefined)
 
@@ -10,18 +10,18 @@ const WsContextProvider = ({ children }) => {
 
 	/** @type {[WebSocket]} */
 	const [socket, setSocket] = useState(() => null);
-	
+	const pathname = usePathname();
 	useEffect(() => {
-		let localToken = localStorage.getItem('sessionToken');
-		if (localStorage.getItem('sessionToken') != null && socket == null) {
-			let s = NetworkController.initSocket(localToken)
-			setSocket(s)
-		}
+		// if (pathname != '/') {
+			let localToken = localStorage.getItem('sessionToken');
+			if (localToken != null) {
+				let s = NetworkController.initSocket(localToken, pathname != '/' ? null : '/game')
+				setSocket(s)
+			}
+		// }
 	}, [])
 
 	// useEffect(() => initSocket(), []);
-	const router = useRouter();
-	NetworkController.router = router;
 	return (
 		<WsContext.Provider value={[ socket, setSocket ]}>
 				{children}

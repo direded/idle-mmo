@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { redirect } from 'next/navigation';
+import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import Tile from '@/components/Tile';
 import ModalWindow from '@/components/ModalWindow';
+import { NetworkController } from '@/game/NetworkController';
+import { WsContext } from '@/context/WsContext';
 
 // Mock data for demonstration
 const initialCharacter = {
@@ -14,54 +17,66 @@ const initialCharacter = {
 	currentLocation: 'Village'
 };
 
-// Mock data for locations
-const mockIcon = '/assets/items/sword.png'
+const initialInventory = [
+	{ id: 1, name: 'Sword', weight: 2.5, count: 1 },
+	{ id: 2, name: 'Shield', weight: 3.0, count: 1 },
+	{ id: 3, name: 'Potion', weight: 0.1, count: 5 },
+	{ id: 4, name: 'Gold Coin', weight: 0.01, count: 50 },
+	{ id: 5, name: 'Leather Armor', weight: 5.0, count: 1 },
+	{ id: 6, name: 'Healing Herb', weight: 0.05, count: 10 },
+	{ id: 7, name: 'Magic Wand', weight: 1.5, count: 1 },
+	{ id: 8, name: 'Torch', weight: 0.5, count: 2 },
+	{ id: 9, name: 'Rope', weight: 0.3, count: 1 },
+	{ id: 10, name: 'Map', weight: 0.1, count: 1 }
+];
+
 const locations = {
 	'Village': {
-		description: 'A peaceful village where you can rest and trade',
-		nearbyLocations: ['Woods', 'Mountain', 'River'],
-		icon: mockIcon
+		description: 'A peaceful village with friendly inhabitants.',
+		icon: '/icons/village.png',
+		nearbyLocations: ['Forest', 'Mountain', 'Cave']
 	},
-	'Woods': {
-		description: 'Dense forest full of resources and wildlife',
-		nearbyLocations: ['Village', 'Mountain', 'Cave'],
-		icon: mockIcon
+	'Forest': {
+		description: 'A dense forest, home to various creatures.',
+		icon: '/icons/forest.png',
+		nearbyLocations: ['Village', 'River']
 	},
 	'Mountain': {
-		description: 'High peaks with valuable minerals',
-		nearbyLocations: ['Village', 'Woods', 'Cave'],
-		icon: mockIcon
-	},
-	'River': {
-		description: 'Fresh water source with fish',
-		nearbyLocations: ['Village', 'Woods'],
-		icon: mockIcon
+		description: 'A towering mountain range, dangerous but full of resources.',
+		icon: '/icons/mountain.png',
+		nearbyLocations: ['Village', 'Cave']
 	},
 	'Cave': {
-		description: 'Dark cave system with rare resources',
-		nearbyLocations: ['Woods', 'Mountain'],
-		icon: mockIcon
-	}
+		description: 'A dark and mysterious cave system.',
+		icon: '/icons/cave.png',
+		nearbyLocations: ['Village', 'Mountain']
+	},
+	'River': {
+		description: 'A flowing river, abundant with fish.',
+		icon: '/icons/river.png',
+		nearbyLocations: ['Forest']
+	},
 };
 
-// Icon mapping for different item types
 const itemIcons = {
-	'Wooden Sword': '/assets/items/sword.png',
-	'Health Potion': '/assets/items/potion.png',
-	'Leather Armor': '/assets/items/leather.png',
+	'Sword': '/icons/sword.png',
+	'Shield': '/icons/shield.png',
+	'Potion': '/icons/potion.png',
+	'Gold Coin': '/icons/gold_coin.png',
+	'Leather Armor': '/icons/leather_armor.png',
+	'Healing Herb': '/icons/healing_herb.png',
+	'Magic Wand': '/icons/magic_wand.png',
+	'Torch': '/icons/torch.png',
+	'Rope': '/icons/rope.png',
+	'Map': '/icons/map.png',
 };
-
-const initialInventory = [
-	{ id: 1, name: 'Wooden Sword', weight: 2, count: 1 },
-	{ id: 2, name: 'Health Potion', weight: 0.5, count: 3 },
-	{ id: 3, name: 'Leather Armor', weight: 3, count: 1 },
-];
 
 export default function GamePage() {
 	const [character, setCharacter] = useState(initialCharacter);
 	const [inventory, setInventory] = useState(initialInventory);
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 	const [openModals, setOpenModals] = useState([]);
+	const [socket, setSocket] = useContext(WsContext);
 
 	// Add event listeners for window dragging and resizing
 	useEffect(() => {
@@ -99,8 +114,7 @@ export default function GamePage() {
 			direction = 'descending';
 		}
 		setSortConfig({ key, direction });
-
-		const sortedItems = [...inventory].sort((a, b) => {
+		const sortedInventory = [...inventory].sort((a, b) => {
 			if (a[key] < b[key]) {
 				return direction === 'ascending' ? -1 : 1;
 			}
@@ -109,13 +123,14 @@ export default function GamePage() {
 			}
 			return 0;
 		});
-
-		setInventory(sortedItems);
+		setInventory(sortedInventory);
 	};
 
 	const getSortIcon = (key) => {
-		if (sortConfig.key !== key) return '↕';
-		return sortConfig.direction === 'ascending' ? '↑' : '↓';
+		if (sortConfig.key === key) {
+			return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
+		}
+		return null;
 	};
 
 	return (
@@ -152,42 +167,68 @@ export default function GamePage() {
 						{/* Inventory Section */}
 						<Tile
 							title="Inventory"
-							className="border-t-2 border-b-2 border-r-2 border-l-2"
+							className="border-t-2 border-b-2 border-r-2 border-l-2 min-h-96 max-h-96"
 						>
-							<div className="overflow-x-auto">
-								<table className="min-w-full">
-									<thead>
-										<tr className="bg-gray-700">
-											<th 
-												className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase cursor-pointer"
-												onClick={() => handleSort('name')}
-											>
-												Item {getSortIcon('name')}
-											</th>
-											<th 
-												className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase cursor-pointer"
-												onClick={() => handleSort('weight')}
-											>
-												Weight {getSortIcon('weight')}
-											</th>
-											<th 
-												className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase cursor-pointer"
-												onClick={() => handleSort('count')}
-											>
-												Count {getSortIcon('count')}
-											</th>
-										</tr>
-									</thead>
-									<tbody className="divide-y divide-gray-700">
-										{inventory.map((item) => (
-											<tr key={item.id} className="hover:bg-gray-700 transition-colors">
-												<td className="px-4 py-2 text-gray-300">{item.name}</td>
-												<td className="px-4 py-2 text-gray-300">{item.weight} kg</td>
-												<td className="px-4 py-2 text-gray-300">{item.count}</td>
+							<div className="relative h-full flex flex-col">
+								<div className="flex-grow overflow-auto">
+									<table className="min-w-full">
+										<thead className="sticky top-0 bg-gray-700 shadow-md z-10">
+											<tr>
+												<th 
+													className="px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
+													onClick={() => handleSort('name')}
+												>
+													Item {getSortIcon('name')}
+												</th>
+												<th 
+													className="w-24 px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
+													onClick={() => handleSort('weight')}
+												>
+													Weight {getSortIcon('weight')}
+												</th>
+												<th 
+													className="w-20 px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
+													onClick={() => handleSort('count')}
+												>
+													Count {getSortIcon('count')}
+												</th>
 											</tr>
-										))}
-									</tbody>
-								</table>
+										</thead>
+										<tbody className="divide-y divide-gray-700">
+											{inventory.map((item) => (
+												<tr key={item.id} className="hover:bg-gray-700 transition-colors group">
+													<td className="px-3 py-1 whitespace-nowrap text-gray-300">
+														<div className="flex items-center gap-2">
+															{itemIcons[item.name] ? (
+																<div className="w-6 h-6 relative group-hover:scale-125 transition-transform">
+																	<Image
+																		src={itemIcons[item.name]}
+																		alt={item.name}
+																		fill
+																		className="object-contain disable-drag"
+																	/>
+																</div>
+															) : (
+																<div className="w-6 h-6 bg-gray-600 rounded flex items-center justify-center text-xs group-hover:bg-gray-500 transition-colors">
+																	?
+																</div>
+															)}
+															<span className="group-hover:text-white transition-colors">{item.name}</span>
+														</div>
+													</td>
+													<td className="w-24 px-3 py-1 whitespace-nowrap text-gray-300 group-hover:text-white transition-colors">{item.weight} kg</td>
+													<td className="w-20 px-3 py-1 whitespace-nowrap text-gray-300 group-hover:text-white transition-colors">{item.count}</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+								</div>
+								<div className="h-8 bg-gray-700 border-gray-600 flex items-center justify-between px-4">
+									<p className="text-gray-300">gold: <span className="font-medium text-white">50</span></p>
+									<p className="text-gray-300">weight: <span className="font-medium text-white">
+										{inventory.reduce((total, item) => total + (item.weight * item.count), 0).toFixed(1)} kg
+									</span></p>
+								</div>
 							</div>
 						</Tile>
 					</div>
@@ -225,11 +266,11 @@ export default function GamePage() {
 							title="Nearby Locations"
 							className="border-t-2 border-b-2 border-r-2"
 						>
-							<div className="grid grid-cols-1">
+							<div className="grid grid-cols-1 gap-1">
 								{locations[character.currentLocation]?.nearbyLocations.map((location) => (
 									<div 
 										key={location} 
-										className="flex items-center cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors"
+										className="flex items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
 										onClick={() => handleOpenModal(location)}
 									>
 										<div className="flex items-center gap-4 flex-grow">

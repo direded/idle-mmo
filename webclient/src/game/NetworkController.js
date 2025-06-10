@@ -11,9 +11,16 @@ const NetworkController = (() => {
 
 	const messageHandlers = {
 		[packetType.tokenCl]: (message) => {
-			if (!message.success) return;
+			NetworkController.tokenResponseAccepted = true
+			if (!message.success) {
+				NetworkController.onError('Wrong token')
+				NetworkController.isTokenValid = false
+				return;
+			}
 			localStorage.setItem('sessionToken', message.sessionToken);
-			redirect(message.redirect || '/game');
+			console.log("WebSocket initialized")
+			NetworkController.isTokenValid = true
+			if (message.redirect) redirect(message.redirect);
 		},
 		
 		[packetType.userProfileCl]: (message) => {
@@ -25,7 +32,10 @@ const NetworkController = (() => {
 		},
 	}
 
-	const initSocket = (token, onSuccess, onError) => {
+	const initSocket = (token, redirect, onSuccess, onError) => {
+		console.log("WebSocket initializing..")
+		NetworkController.onError = onError
+		NetworkController.onSuccess = onSuccess
 		let socket = new WebSocket('ws://localhost:9000')
 
 		socket.onmessage = (event) => {
@@ -38,21 +48,26 @@ const NetworkController = (() => {
 			console.log('WebSocket connection closed')
 		});
 
-		sendToken(socket, token, onError);
+
+		sendToken(socket, token, redirect, onError);
 
 		return socket
 	}
 
-	const sendToken = (s, token, onError) => {
+	/** @param s {WebSocket} */
+	const sendToken = (s, token, redirect, onError) => {
+		NetworkController.tokenResponseAccepted = false
 		const sendTokenOnConnectionOpen = () => {
-			s.send(JSON.stringify({ 'token': token }));
+			let message = { 'token': token, redirect }
+			console.log('Sending', message)
+			s.send(JSON.stringify(message));
 		}
 		
 		s.addEventListener('open', sendTokenOnConnectionOpen);
 		new Promise(res => setTimeout(res, 3000))
 		.then(res => {
 			return new Promise((resolve, reject) => {
-				if (s == null || s.readyState != WebSocket.OPEN) {
+				if (s == null || s.readyState != WebSocket.OPEN || localStorage.getItem('sessionToken') == null) {
 					reject()
 				} else {
 					resolve()
@@ -60,8 +75,12 @@ const NetworkController = (() => {
 			})
 		})
 		.catch(() => {
-			if (onError != null)
-				onError()
+			if (!NetworkController.tokenResponseAccepted) {
+				if (s != null) 
+					s.close()
+				if (onError != null)
+					onError('Cannot connect to server')
+			}
 			
 		})
 		.finally(() => {
@@ -76,9 +95,12 @@ const NetworkController = (() => {
 	}
 
 	return {
+		onError: () => {},
+		onSuccess: () => {},
 		packetType,
 		initSocket,
-		sendToken
+		sendToken,
+		isTokenValid: null
 	}
 
 })();
