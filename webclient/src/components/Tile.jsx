@@ -6,7 +6,8 @@ export default function Tile({
 	title, 
 	children, 
 	className = '',
-	isCollapsible = true
+	isCollapsible = true,
+	bodyMaxHeight
 }) {
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -25,12 +26,14 @@ export default function Tile({
 					{title}
 				</div>
 			</div>
-			<div 
-				className={`transition-[height] duration-200 ease-in-out overflow-hidden`}
-				style={{ height: isCollapsed ? '0px' : 'auto' }}
-			>
-				<div className="p-4">
-					{children}
+			<div className="px-4 py-4">
+				<div 
+					className={`transition-[height] duration-200 ease-in-out overflow-hidden`}
+					style={{ height: isCollapsed ? '0px' : 'auto' }}
+				>
+					<div className="overflow-y-auto">
+						{children}
+					</div>
 				</div>
 			</div>
 		</div>

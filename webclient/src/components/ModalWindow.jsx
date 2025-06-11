@@ -51,7 +51,7 @@ export default function ModalWindow({
                 top: `${position.y}px`
             }}
         >
-            <div className="bg-gray-800 rounded overflow-hidden w-[500px] shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+            <div className="bg-gray-800 overflow-hidden w-[500px] shadow-[0_0_8px_rgba(0,0,0,0.4)]">
                 {/* Title Bar */}
                 <div
                     className="h-7 bg-gray-700 flex items-center pl-4 cursor-move select-none"

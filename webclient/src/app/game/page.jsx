@@ -33,42 +33,42 @@ const initialInventory = [
 const locations = {
 	'Village': {
 		description: 'A peaceful village with friendly inhabitants.',
-		icon: '/icons/village.png',
+		icon: '/assets/items/leather.png',
 		nearbyLocations: ['Forest', 'Mountain', 'Cave']
 	},
 	'Forest': {
 		description: 'A dense forest, home to various creatures.',
-		icon: '/icons/forest.png',
+		icon: '/assets/items/leather.png',
 		nearbyLocations: ['Village', 'River']
 	},
 	'Mountain': {
 		description: 'A towering mountain range, dangerous but full of resources.',
-		icon: '/icons/mountain.png',
+		icon: '/assets/items/leather.png',
 		nearbyLocations: ['Village', 'Cave']
 	},
 	'Cave': {
 		description: 'A dark and mysterious cave system.',
-		icon: '/icons/cave.png',
+		icon: '/assets/items/leather.png',
 		nearbyLocations: ['Village', 'Mountain']
 	},
 	'River': {
 		description: 'A flowing river, abundant with fish.',
-		icon: '/icons/river.png',
+		icon: '/assets/items/leather.png',
 		nearbyLocations: ['Forest']
 	},
 };
 
-const itemIcons = {
-	'Sword': '/icons/sword.png',
-	'Shield': '/icons/shield.png',
-	'Potion': '/icons/potion.png',
-	'Gold Coin': '/icons/gold_coin.png',
-	'Leather Armor': '/icons/leather_armor.png',
-	'Healing Herb': '/icons/healing_herb.png',
-	'Magic Wand': '/icons/magic_wand.png',
-	'Torch': '/icons/torch.png',
-	'Rope': '/icons/rope.png',
-	'Map': '/icons/map.png',
+const itemitems = {
+	'Sword': '/assets/items/leather.png',
+	'Shield': '/assets/items/leather.png',
+	'Potion': '/assets/items/leather.png',
+	'Gold Coin': '/assets/items/leather.png',
+	'Leather Armor': '/assets/items/leather.png',
+	'Healing Herb': '/assets/items/leather.png',
+	'Magic Wand': '/assets/items/leather.png',
+	'Torch': '/assets/items/leather.png',
+	'Rope': '/assets/items/leather.png',
+	'Map': '/assets/items/leather.png',
 };
 
 export default function GamePage() {
@@ -199,10 +199,10 @@ export default function GamePage() {
 												<tr key={item.id} className="hover:bg-gray-700 transition-colors group">
 													<td className="px-3 py-1 whitespace-nowrap text-gray-300">
 														<div className="flex items-center gap-2">
-															{itemIcons[item.name] ? (
+															{itemitems[item.name] ? (
 																<div className="w-6 h-6 relative group-hover:scale-125 transition-transform">
 																	<Image
-																		src={itemIcons[item.name]}
+																		src={itemitems[item.name]}
 																		alt={item.name}
 																		fill
 																		className="object-contain disable-drag"
