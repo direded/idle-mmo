@@ -25,6 +25,24 @@
 	--color-foreground: var(--foreground);
 	--font-sans: var(--font-geist);
 	--font-mono: var(--font-geist-mono);
+
+	/* --color-mainbg: #c9b195; */
+	--color-mainbg: #180a07;
+
+	/* --color-basecolordark: #220e0a;
+	--color-basecolordark: #5F271C; */
+
+	--color-basecolor: #52302a;
+	--color-basecolordark: #371710;
+	--color-basecolorlight: #b86c5e;
+
+	--color-cornerborder: #220e0a;
+	--color-cornerborderlight: #3d241f;
+	--color-corner: #52302a;
+	--color-container: #664035;
+
+	--color-button: #c5a17d;
+	--color-buttonhover: #96785c;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,10 +53,11 @@
 }
 
 body {
+	box-sizing: border-box;
 	line-height: 1.2;
 	background: var(--background);
 	color: var(--foreground);
-	font-family: MorrisRoman, Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 
 	webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Safari */
@@ -58,44 +77,36 @@ body {
 }
 
 .scrollbar-a::-webkit-scrollbar-track {
-	background: #1f2937;
+	background: #220e0a90;
 	border-radius: 4px;
 }
 
 .scrollbar-a::-webkit-scrollbar-thumb {
-	background: #4b5563;
+	background: #220e0a90;
 	border-radius: 4px;
 }
 
 .scrollbar-a::-webkit-scrollbar-thumb:hover {
-	background: #6b7280;
+	background: #220e0a70;
 }
 
 /* For Webkit browsers (Chrome, Safari) */
 ::-webkit-scrollbar {
-	width: 10px; /* Slightly wider for better visibility */
-	height: 10px; /* Consistent height for horizontal scrollbars */
+	width: 8px; /* Slightly wider for better visibility */
+	height: 8px; /* Consistent height for horizontal scrollbars */
 }
 
 ::-webkit-scrollbar-track {
-	background: #1a202c; /* Very dark background for the track */
+	background: #220e0a00; /* Very dark background for the track */
 	border-radius: 5px; /* Slightly less rounded for a sharper look */
 }
 
 ::-webkit-scrollbar-thumb {
-	background: linear-gradient(180deg, #4a5568, #2d3748); /* Subtle gradient for depth */
-	border-radius: 5px; /* Match track border-radius */
-	border: 1px solid #6a7587; /* Thin, lighter border for definition */
+	background: #220e0a90; /* Subtle gradient for depth */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(180deg, #6a7587, #4a5568); /* Lighter gradient on hover */
-	border-color: #a0aec0; /* More prominent border on hover */
+	background: #220e0acc; /* Lighter gradient on hover */
 }
 
-/* For Firefox */
-/* Note: Firefox styling is more limited. This will make it thinner and dark. */
-* {
-	scrollbar-width: thin; /* "auto" or "none" */
-	scrollbar-color: #4a5568 #1a202c; /* thumb and track color */
-}
+

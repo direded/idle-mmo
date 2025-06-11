@@ -1,340 +1,230 @@
 'use client';
 
-import { redirect } from 'next/navigation';
-import { useState, useEffect, useContext } from 'react';
-import Image from 'next/image';
-import Tile from '@/components/Tile';
+import { useState } from 'react';
 import ModalWindow from '@/components/ModalWindow';
-import { NetworkController } from '@/game/NetworkController';
-import { WsContext } from '@/context/WsContext';
 
-// Mock data for demonstration
-const initialCharacter = {
-	name: 'Adventurer',
-	health: 100,
-	energy: 100,
-	hunger: 100,
-	currentLocation: 'Village'
-};
+export default function GameInterface() {
+	const [activeTab, setActiveTab] = useState('general');
+	const [showLocationModal, setShowLocationModal] = useState(false);
+	const [selectedLocation, setSelectedLocation] = useState(null);
+	const [showSettingsModal, setShowSettingsModal] = useState(false);
+	const [message, setMessage] = useState('');
+	const [logs, setLogs] = useState([]);
 
-const initialInventory = [
-	{ id: 1, name: 'Sword', weight: 2.5, count: 1 },
-	{ id: 2, name: 'Shield', weight: 3.0, count: 1 },
-	{ id: 3, name: 'Potion', weight: 0.1, count: 5 },
-	{ id: 4, name: 'Gold Coin', weight: 0.01, count: 50 },
-	{ id: 5, name: 'Leather Armor', weight: 5.0, count: 1 },
-	{ id: 6, name: 'Healing Herb', weight: 0.05, count: 10 },
-	{ id: 7, name: 'Magic Wand', weight: 1.5, count: 1 },
-	{ id: 8, name: 'Torch', weight: 0.5, count: 2 },
-	{ id: 9, name: 'Rope', weight: 0.3, count: 1 },
-	{ id: 10, name: 'Map', weight: 0.1, count: 1 }
-];
-
-const locations = {
-	'Village': {
-		description: 'A peaceful village with friendly inhabitants.',
-		icon: '/assets/items/leather.png',
-		nearbyLocations: ['Forest', 'Mountain', 'Cave']
-	},
-	'Forest': {
-		description: 'A dense forest, home to various creatures.',
-		icon: '/assets/items/leather.png',
-		nearbyLocations: ['Village', 'River']
-	},
-	'Mountain': {
-		description: 'A towering mountain range, dangerous but full of resources.',
-		icon: '/assets/items/leather.png',
-		nearbyLocations: ['Village', 'Cave']
-	},
-	'Cave': {
-		description: 'A dark and mysterious cave system.',
-		icon: '/assets/items/leather.png',
-		nearbyLocations: ['Village', 'Mountain']
-	},
-	'River': {
-		description: 'A flowing river, abundant with fish.',
-		icon: '/assets/items/leather.png',
-		nearbyLocations: ['Forest']
-	},
-};
-
-const itemitems = {
-	'Sword': '/assets/items/leather.png',
-	'Shield': '/assets/items/leather.png',
-	'Potion': '/assets/items/leather.png',
-	'Gold Coin': '/assets/items/leather.png',
-	'Leather Armor': '/assets/items/leather.png',
-	'Healing Herb': '/assets/items/leather.png',
-	'Magic Wand': '/assets/items/leather.png',
-	'Torch': '/assets/items/leather.png',
-	'Rope': '/assets/items/leather.png',
-	'Map': '/assets/items/leather.png',
-};
-
-export default function GamePage() {
-	const [character, setCharacter] = useState(initialCharacter);
-	const [inventory, setInventory] = useState(initialInventory);
-	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-	const [openModals, setOpenModals] = useState([]);
-	const [socket, setSocket] = useContext(WsContext);
-
-	// Add event listeners for window dragging and resizing
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			// This will be handled by the Window component
-		};
-
-		const handleMouseUp = () => {
-			// This will be handled by the Window component
-		};
-
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp);
-
-		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('mouseup', handleMouseUp);
-		};
-	}, []);
-
-	const handleOpenModal = (location) => {
-		setOpenModals(prev => {
-			// If modal for this location is already open, close it
-			if (prev.includes(location)) {
-				return prev.filter(loc => loc !== location);
-			}
-			// Otherwise, open it
-			return [...prev, location];
-		});
+	const handleLocationClick = (location) => {
+		setSelectedLocation(location);
+		setShowLocationModal(true);
 	};
 
-	const handleSort = (key) => {
-		let direction = 'ascending';
-		if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-			direction = 'descending';
+	const handleSendMessage = () => {
+		if (message.trim()) {
+			setLogs([...logs, { type: 'user', content: message }]);
+			setMessage('');
 		}
-		setSortConfig({ key, direction });
-		const sortedInventory = [...inventory].sort((a, b) => {
-			if (a[key] < b[key]) {
-				return direction === 'ascending' ? -1 : 1;
-			}
-			if (a[key] > b[key]) {
-				return direction === 'ascending' ? 1 : -1;
-			}
-			return 0;
-		});
-		setInventory(sortedInventory);
 	};
 
-	const getSortIcon = (key) => {
-		if (sortConfig.key === key) {
-			return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
-		}
-		return null;
-	};
+	const nearbyLocations = [
+		{ id: 1, name: 'Forest', description: 'A dense forest with tall trees' },
+		{ id: 2, name: 'Mountain', description: 'A tall mountain with a cave' },
+		{ id: 3, name: 'River', description: 'A flowing river with fish' },
+	];
 
 	return (
-		<div className="pt-2 min-h-screen bg-gray-900">
-			<div className="max-w-6xl mx-auto">
-				<div className="grid grid-cols-2 gap-2">
-					{/* Left Column */}
-					<div className="flex flex-col gap-2">
-						{/* Character Info Section */}
-						<Tile
-							title="Character Info"
-							className="border-t-2 border-b-2 border-r-2 border-l-2"
-						>
-							<div className="space-y-2">
-								<div className="grid grid-cols-[100px_1fr]">
-									<p className="text-gray-300">Name</p>
-									<p className="text-white font-medium">{character.name}</p>
-								</div>
-								<div className="grid grid-cols-[100px_1fr]">
-									<p className="text-gray-300">Health</p>
-									<p className="text-white font-medium">{character.health}</p>
-								</div>
-								<div className="grid grid-cols-[100px_1fr]">
-									<p className="text-gray-300">Energy</p>
-									<p className="text-white font-medium">{character.energy}</p>
-								</div>
-								<div className="grid grid-cols-[100px_1fr]">
-									<p className="text-gray-300">Hunger</p>
-									<p className="text-white font-medium">{character.hunger}</p>
-								</div>
-							</div>
-						</Tile>
-
-						{/* Inventory Section */}
-						<Tile
-							title="Inventory"
-							className="border-t-2 border-b-2 border-r-2 border-l-2 min-h-96 max-h-96"
-						>
-							<div className="relative h-full flex flex-col">
-								<div className="flex-grow overflow-auto">
-									<table className="min-w-full">
-										<thead className="sticky top-0 bg-gray-700 shadow-md z-10">
-											<tr>
-												<th 
-													className="px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
-													onClick={() => handleSort('name')}
-												>
-													Item {getSortIcon('name')}
-												</th>
-												<th 
-													className="w-24 px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
-													onClick={() => handleSort('weight')}
-												>
-													Weight {getSortIcon('weight')}
-												</th>
-												<th 
-													className="w-20 px-3 py-1 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors"
-													onClick={() => handleSort('count')}
-												>
-													Count {getSortIcon('count')}
-												</th>
-											</tr>
-										</thead>
-										<tbody className="divide-y divide-gray-700">
-											{inventory.map((item) => (
-												<tr key={item.id} className="hover:bg-gray-700 transition-colors group">
-													<td className="px-3 py-1 whitespace-nowrap text-gray-300">
-														<div className="flex items-center gap-2">
-															{itemitems[item.name] ? (
-																<div className="w-6 h-6 relative group-hover:scale-125 transition-transform">
-																	<Image
-																		src={itemitems[item.name]}
-																		alt={item.name}
-																		fill
-																		className="object-contain disable-drag"
-																	/>
-																</div>
-															) : (
-																<div className="w-6 h-6 bg-gray-600 rounded flex items-center justify-center text-xs group-hover:bg-gray-500 transition-colors">
-																	?
-																</div>
-															)}
-															<span className="group-hover:text-white transition-colors">{item.name}</span>
-														</div>
-													</td>
-													<td className="w-24 px-3 py-1 whitespace-nowrap text-gray-300 group-hover:text-white transition-colors">{item.weight} kg</td>
-													<td className="w-20 px-3 py-1 whitespace-nowrap text-gray-300 group-hover:text-white transition-colors">{item.count}</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
-								</div>
-								<div className="h-8 bg-gray-700 border-gray-600 flex items-center justify-between px-4">
-									<p className="text-gray-300">gold: <span className="font-medium text-white">50</span></p>
-									<p className="text-gray-300">weight: <span className="font-medium text-white">
-										{inventory.reduce((total, item) => total + (item.weight * item.count), 0).toFixed(1)} kg
-									</span></p>
-								</div>
-							</div>
-						</Tile>
+		<div className="flex gap-4 p-4 h-screen">
+			{/* First Column */}
+			<div className="flex flex-col gap-4 w-1/4">
+				{/* Time and Weather Tile */}
+				<Tile className="h-1/2">
+					<div className="p-4">
+						<h2 className="text-xl font-bold mb-2">Game Time & Weather</h2>
+						<div className="space-y-2">
+							<p>Time: 12:00 PM</p>
+							<p>Weather: Sunny</p>
+						</div>
 					</div>
+				</Tile>
 
-					{/* Right Column */}
-					<div className="flex flex-col gap-2">
-						{/* Current Location Section */}
-						<Tile
-							title="Current Location"
-							className="border-t-2 border-b-2 border-r-2"
-						>
-							<div 
-								className="flex items-center gap-4 cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
-								onClick={() => handleOpenModal(character.currentLocation)}
-							>
-								<div className="w-16 h-16 relative bg-gray-700">
-									{locations[character.currentLocation]?.icon && (
-										<Image
-											src={locations[character.currentLocation].icon}
-											alt={character.currentLocation}
-											fill
-											className="object-contain p-2"
-										/>
-									)}
-								</div>
-								<div className="flex-grow">
-									<h3 className="text-xl font-bold text-white mb-2">{character.currentLocation}</h3>
-									<p className="text-gray-300">{locations[character.currentLocation]?.description}</p>
-								</div>
+				{/* Modal Windows List Tile */}
+				<Tile className="h-1/2">
+					<div className="p-4">
+						<h2 className="text-xl font-bold mb-2">Windows</h2>
+						<ul className="space-y-2">
+							<li>
+								<button 
+									className="text-blue-500 hover:text-blue-700"
+									onClick={() => setShowSettingsModal(true)}
+								>
+									Settings
+								</button>
+							</li>
+						</ul>
+					</div>
+				</Tile>
+			</div>
+
+			{/* Second Column */}
+			<div className="flex flex-col gap-4 w-3/4">
+				{/* Top Row */}
+				<div className="flex gap-4 h-1/2">
+					{/* Character Information Tile */}
+					<Tile className="w-1/3">
+						<div className="p-4">
+							<div className="flex gap-2 mb-4">
+								<button
+									className={`px-3 py-1 rounded ${activeTab === 'general' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+									onClick={() => setActiveTab('general')}
+								>
+									General
+								</button>
+								<button
+									className={`px-3 py-1 rounded ${activeTab === 'equipment' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+									onClick={() => setActiveTab('equipment')}
+								>
+									Equipment
+								</button>
+								<button
+									className={`px-3 py-1 rounded ${activeTab === 'inventory' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+									onClick={() => setActiveTab('inventory')}
+								>
+									Inventory
+								</button>
 							</div>
-						</Tile>
-
-						{/* Nearby Locations Section */}
-						<Tile
-							title="Nearby Locations"
-							className="border-t-2 border-b-2 border-r-2"
-						>
-							<div className="grid grid-cols-1 gap-1">
-								{locations[character.currentLocation]?.nearbyLocations.map((location) => (
-									<div 
-										key={location} 
-										className="flex items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
-										onClick={() => handleOpenModal(location)}
-									>
-										<div className="flex items-center gap-4 flex-grow">
-											<div className="w-12 h-12 relative bg-gray-700">
-												{locations[location]?.icon && (
-													<Image
-														src={locations[location].icon}
-														alt={location}
-														fill
-														className="object-contain p-2"
-													/>
-												)}
-											</div>
-											<div className="text-left">
-												<h3 className="font-semibold text-white">{location}</h3>
-												<p className="text-sm text-gray-300">{locations[location]?.description}</p>
-											</div>
-										</div>
+							<div className="mt-4">
+								{activeTab === 'general' && (
+									<div className="space-y-2">
+										<p>Name: Player1</p>
+										<p>Health: 100/100</p>
+										<p>Hunger: 80/100</p>
+										<p>Energy: 90/100</p>
 									</div>
-								))}
+								)}
+								{activeTab === 'equipment' && (
+									<div className="space-y-2">
+										<p>Head: None</p>
+										<p>Chest: Leather Armor</p>
+										<p>Weapon: Wooden Sword</p>
+									</div>
+								)}
+								{activeTab === 'inventory' && (
+									<div className="space-y-2">
+										<p>Gold: 100</p>
+										<p>Potion: 3</p>
+										<p>Food: 5</p>
+									</div>
+								)}
 							</div>
-						</Tile>
-					</div>
+						</div>
+					</Tile>
+
+					{/* Locations Tile */}
+					<Tile className="w-1/3">
+						<div className="p-4">
+							<h2 className="text-xl font-bold mb-4">Locations</h2>
+							<div className="mb-4">
+								<p className="font-semibold">Current Location:</p>
+								<p>Village Square</p>
+							</div>
+							<div>
+								<p className="font-semibold mb-2">Nearby Locations:</p>
+								<ul className="space-y-2">
+									{nearbyLocations.map((location) => (
+										<li key={location.id}>
+											<button
+												className="text-blue-500 hover:text-blue-700"
+												onClick={() => handleLocationClick(location)}
+											>
+												{location.name}
+											</button>
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+					</Tile>
+
+					{/* Activity Tile */}
+					<Tile className="w-1/3">
+						<div className="p-4 flex items-center justify-center h-full">
+							<button className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+								Start Activity
+							</button>
+						</div>
+					</Tile>
+				</div>
+
+				{/* Bottom Row */}
+				<div className="h-1/2">
+					{/* Logs and Messages Tile */}
+					<Tile className="h-full">
+						<div className="p-4 flex flex-col h-full">
+							<div className="flex-grow overflow-y-auto mb-4">
+								<h2 className="text-xl font-bold mb-2">Logs</h2>
+								<ul className="space-y-2">
+									{logs.map((log, index) => (
+										<li key={index} className="text-sm">
+											{log.content}
+										</li>
+									))}
+								</ul>
+							</div>
+							<div className="flex gap-2">
+								<input
+									type="text"
+									value={message}
+									onChange={(e) => setMessage(e.target.value)}
+									className="flex-grow px-3 py-2 border rounded"
+									placeholder="Type your message..."
+								/>
+								<button
+									onClick={handleSendMessage}
+									className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+								>
+									Send
+								</button>
+							</div>
+						</div>
+					</Tile>
 				</div>
 			</div>
 
-			{/* Multiple Location Info Modals */}
-			{openModals.map((location) => (
+			{/* Location Modal */}
+			{showLocationModal && selectedLocation && (
 				<ModalWindow
-					key={location}
-					title={`Location Info - ${location}`}
-					onClose={() => handleOpenModal(location)}
+					title={selectedLocation.name}
+					onClose={() => setShowLocationModal(false)}
 				>
-					<div className="space-y-4">
-						<div className="flex items-center gap-4">
-							<div className="w-16 h-16 relative bg-gray-700">
-								{locations[location]?.icon && (
-									<Image
-										src={locations[location].icon}
-										alt={location}
-										fill
-										className="object-contain p-2"
-									/>
-								)}
+					<div className="p-4">
+						<p>{selectedLocation.description}</p>
+					</div>
+				</ModalWindow>
+			)}
+
+			{/* Settings Modal */}
+			{showSettingsModal && (
+				<ModalWindow
+					title="Settings"
+					onClose={() => setShowSettingsModal(false)}
+				>
+					<div className="p-4">
+						<div className="space-y-4">
+							<div>
+								<label className="block mb-2">Sound Volume</label>
+								<input type="range" min="0" max="100" className="w-full" />
 							</div>
 							<div>
-								<h2 className="text-2xl font-bold text-white">{location}</h2>
-								<p className="text-gray-300">{locations[location]?.description}</p>
+								<label className="block mb-2">Music Volume</label>
+								<input type="range" min="0" max="100" className="w-full" />
 							</div>
-						</div>
-						<div>
-							<h3 className="text-lg font-semibold text-white mb-2">Nearby Locations</h3>
-							<div className="grid grid-cols-2 gap-2">
-								{locations[location]?.nearbyLocations.map((nearbyLocation) => (
-									<div key={nearbyLocation} className="bg-gray-700 p-2 rounded">
-										<p className="text-white">{nearbyLocation}</p>
-										<p className="text-sm text-gray-300">{locations[nearbyLocation]?.description}</p>
-									</div>
-								))}
+							<div>
+								<label className="flex items-center">
+									<input type="checkbox" className="mr-2" />
+									Show FPS
+								</label>
 							</div>
 						</div>
 					</div>
 				</ModalWindow>
-			))}
+			)}
 		</div>
 	);
 } 
