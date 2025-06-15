@@ -3,7 +3,7 @@ package direded.game.server;
 import direded.game.server.game.GameMap;
 import direded.game.server.game.controller.CharacterController;
 import direded.game.server.game.gameobject.CharacterObject;
-import direded.game.server.game.process.CharacterProcessFactory;
+import direded.game.server.game.process.IdleProcess;
 import direded.game.server.model.UserModel;
 import direded.game.server.model.UserSessionModel;
 import direded.game.server.repository.UserRepository;
@@ -58,7 +58,7 @@ public class DemoComponent {
 		var c = CharacterObject.create();
 		c.setId(UUID.randomUUID());
 		c.setName("Dima");
-		c.setProcess(CharacterProcessFactory.instance.emptyProcess());
+		c.setProcess(IdleProcess.get());
 		c.setCurrentMapTile(GameMap.instance.getTileByLabel("town"));
 		c.setUser(user);
 		return c;

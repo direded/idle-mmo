@@ -1,10 +1,15 @@
+/** @import { GameViewModel } from '@/game/GameViewModel' */
 import { redirect } from 'next/navigation';
 
 const NetworkController = (() => {
+
+	/** @type {GameViewModel} */
+	let viewModel = null
+
 	const packetType = {
 		tokenCl: -1,
 		userProfileCl: 10,
-		updateCharacterCl: 11,
+		characterDataCl: 11,
 		testSv: 10000,
 		commonSv: 20000
 	}
@@ -27,8 +32,25 @@ const NetworkController = (() => {
 
 		},
 
-		[packetType.updateCharacterCl]: (message) => {
+		[packetType.characterDataCl]: (message) => {
+			let state = viewModel.state;
+			state.character.name = message.name;
+			state.process.type = message.process.type;
 
+			state.currentLocation = message.tile.name;
+
+			state.nearbyLocations = []
+			for (let key in message.tile.neighbors) {
+				console.log(key)
+				let tile = message.tile.neighbors[key]
+				state.nearbyLocations.push({
+					name: tile.name,
+					id: tile.id
+				})
+			}
+			
+
+			viewModel.notifySubscribers();
 		},
 	}
 
@@ -91,7 +113,7 @@ const NetworkController = (() => {
 	}
 
 	var receiveMessage = (message) => {
-		return messageHandlers[message.type](message)
+		return messageHandlers[message.packet_type](message)
 	}
 
 	return {
@@ -99,8 +121,8 @@ const NetworkController = (() => {
 		onSuccess: () => {},
 		packetType,
 		initSocket,
-		sendToken,
-		isTokenValid: null
+		setViewModel: (/** @type {GameViewModel} */value) => { viewModel = value },
+		isTokenValid: null,
 	}
 
 })();

@@ -4,7 +4,6 @@ import direded.game.server.game.GameUtils;
 import direded.game.server.game.MapTile;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.process.CharacterProcess;
-import direded.game.server.game.process.CharacterProcessFactory;
 import direded.game.server.game.process.MoveToTileProcess;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +12,7 @@ public class CharacterController {
 
 	public static CharacterController instance;
 
-	private final CharacterProcessFactory characterProcessFactory;
-
-	public CharacterController(CharacterProcessFactory characterProcessFactory) {
-		this.characterProcessFactory = characterProcessFactory;
+	public CharacterController() {
 		instance = this;
 	}
 
@@ -31,7 +27,7 @@ public class CharacterController {
 		GameUtils.logger.info("trying to move to " + tile.getName());
 		if (MoveToTileProcess.canProcess(c, tile)) {
 			GameUtils.logger.info("moving to " + tile.getName());
-			setProcess(c, characterProcessFactory.moveToTileProcess(c, tile));
+			setProcess(c, MoveToTileProcess.create(c, tile));
 		}
 	}
 

@@ -1,5 +1,6 @@
 package direded.game.server.game;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,5 +34,28 @@ public class MapTile {
 	@Override
 	public boolean equals(Object obj) {
 		return obj != null && obj.getClass() == this.getClass() && ((MapTile) obj).id.equals(id);
+	}
+
+	public JsonObject serialize(JsonObject json) {
+		json.addProperty("id", id.toString());
+		json.addProperty("label", label);
+		json.addProperty("name", name);
+		
+		JsonObject neighborsJson = new JsonObject();
+		neighbors.forEach((tile, distance) -> {
+			var neighborData = tile.serializeWithoutNeighbors(new JsonObject());
+			neighborData.addProperty("distance", distance);
+			neighborsJson.add(tile.getId().toString(), neighborData);
+		});
+		json.add("neighbors", neighborsJson);
+		
+		return json;
+	}
+
+	public JsonObject serializeWithoutNeighbors(JsonObject json) {
+		json.addProperty("id", id.toString());
+		json.addProperty("label", label);
+		json.addProperty("name", name);
+		return json;
 	}
 }

@@ -94,10 +94,10 @@ public class NetworkController {
 
 	protected void receiveMessage(UserClient client, String message) {
 		var json = gson.fromJson(message, JsonObject.class);
-		if (!json.has("type"))
+		if (!json.has("packet_type"))
 			return;
 
-		var handler = serverPacketHandlers.get(json.get("type").getAsInt());
+		var handler = serverPacketHandlers.get(json.get("packet_type").getAsInt());
 		if (handler == null) return;
 		var packet = handler.parse(json);
 		if (packet == null) return;
@@ -113,7 +113,7 @@ public class NetworkController {
 
 	public void send(Channel channel, ClientPacket packet) {
 		var json = packet.serialize();
-		json.addProperty("type", packet.getPacketType().getValue());
+		json.addProperty("packet_type", packet.getPacketType().getValue());
 		channel.writeAndFlush(new TextWebSocketFrame(gson.toJson(json)));
 	}
 

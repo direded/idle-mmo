@@ -2,9 +2,10 @@ package direded.game.server.game.process;
 
 import com.google.gson.JsonObject;
 import direded.game.server.game.GameUtils;
-import direded.game.server.game.ResourceType;
 import direded.game.server.game.gameobject.CharacterObject;
-import direded.game.server.network.clientpacket.UpdateCharacterCl;
+import direded.game.server.game.items.ItemStack;
+import direded.game.server.game.items.ItemType;
+import direded.game.server.network.clientpacket.CharacterDataCl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,10 +14,13 @@ import lombok.Setter;
 public class LumberjackProcess extends CharacterProcess {
 
 	private final String name = "lumberjack";
+	private final CharacterProcessType type = CharacterProcessType.LUMBERJACK;
 	private double time = 0;
 
-	public LumberjackProcess(CharacterObject owner) {
-		super(owner);
+	public static LumberjackProcess create(CharacterObject character) {
+		var process = new LumberjackProcess();
+		process.character = character;
+		return process;
 	}
 
 	@Override
@@ -24,14 +28,16 @@ public class LumberjackProcess extends CharacterProcess {
 		GameUtils.logger.info(name);
 		time += delta;
 		if (time >= 2) {
-			GameUtils.logger.info("lumberjack inc");
-			character.incResource(ResourceType.WOOD, 10);
 
-			var packet = new UpdateCharacterCl(character);
-			var data = packet.getData();
-			var resourcesJson = new JsonObject();
-			resourcesJson.addProperty("wood", character.getResource(ResourceType.WOOD));
-			data.add("resources", resourcesJson);
+			var inventory = character.getInventory();
+			var wood = inventory.get(ItemType.WOOD);
+			if (wood == null) {
+				wood = new ItemStack(ItemType.WOOD, 1);
+			} else {
+				wood.setCount(wood.getCount() + 1);
+			}
+
+			var packet = new CharacterDataCl(character);
 			character.send(packet);
 
 			time -= 2;
@@ -39,4 +45,16 @@ public class LumberjackProcess extends CharacterProcess {
 		time %= 2;
 	}
 
+	@Override
+	public JsonObject serialize(JsonObject json) {
+		super.serialize(json);
+		json.addProperty("time", time);
+		return json;
+	}
+
+	@Override
+	public void deserialize(JsonObject json) {
+		super.deserialize(json);
+		time = json.get("time").getAsDouble();
+	}
 }

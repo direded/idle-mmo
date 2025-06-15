@@ -8,9 +8,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UpdateCharacterCl extends ClientPacket {
+public class CharacterDataCl extends ClientPacket {
 
-	public UpdateCharacterCl(CharacterObject character) {
+	public CharacterDataCl(CharacterObject character) {
 		super(PacketType.UPDATE_CHARACTER_CL);
 		this.character = character;
 	}
@@ -20,9 +20,6 @@ public class UpdateCharacterCl extends ClientPacket {
 
 	@Override
 	public JsonObject serialize() {
-		JsonObject characterJson = new JsonObject();
-		characterJson.addProperty("id", character.getId().toString());
-		characterJson.addProperty("owner", character.getUser().getId().toString());
-		return data;
+		return character.serialize(new JsonObject());
 	}
 }
