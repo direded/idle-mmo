@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { createElement, useState, useEffect } from 'react';
 import GameTile from '@/components/GameTile';
 import ModalWindow from '@/components/ModalWindow';
+import TestWindow from '@/components/TestWindow';
 import { GameViewModel } from '@/game/GameViewModel';
 import { NetworkController } from '@/game/NetworkController'
 
@@ -203,6 +204,16 @@ export default function GameInterface() {
 						</GameTile>
 					</div>
 				</div>
+
+				{/* Modals */}
+				{state.windowModals.map((modal, index) => {
+					var result
+					if (modal.type == 'test') {
+						result = createElement(TestWindow, { key: index });
+					}
+					return result
+						
+				})}
 
 				{/* Location Modal */}
 				{state.showLocationModal && state.selectedLocation && (

@@ -7,6 +7,12 @@ export class GameViewModel {
 			showLocationModal: false,
 			selectedLocation: null,
 			showSettingsModal: false,
+			windowModals: [
+				{ type: 'test' },
+				{ type: 'test' },
+				{ type: 'test' },
+				{ type: 'test' },
+			],
 			message: '',
 			logs: [],
 			character: {
