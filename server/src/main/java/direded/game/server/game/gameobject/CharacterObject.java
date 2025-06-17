@@ -3,6 +3,7 @@ package direded.game.server.game.gameobject;
 import com.google.gson.JsonObject;
 import direded.game.server.game.MapTile;
 import direded.game.server.game.ResourceType;
+import direded.game.server.game.UserClient;
 import direded.game.server.game.inventory.Inventory;
 import direded.game.server.game.process.CharacterProcess;
 import direded.game.server.model.UserModel;
@@ -26,7 +27,7 @@ public class CharacterObject extends GameObject {
 	private Inventory inventory = new Inventory();
 
 	private UserModel user;
-	private Channel channel;
+	private UserClient client;
 
 	public static CharacterObject create() {
 		CharacterObject player = new CharacterObject();
@@ -41,8 +42,11 @@ public class CharacterObject extends GameObject {
 	}
 
 	public void send(ClientPacket packet) {
-		if (channel == null || !channel.isActive()) return;
-		NetworkController.instance.send(channel, packet);
+		if (client == null) {
+			System.out.println("client is null");
+			return;
+		}
+		NetworkController.instance.send(client.getChannel(), packet);
 	}
 
 	public JsonObject serialize(JsonObject json) {

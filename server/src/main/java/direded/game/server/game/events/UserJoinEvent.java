@@ -1,13 +1,14 @@
 package direded.game.server.game.events;
 
 import direded.game.server.game.UserClient;
+import direded.game.server.game.controller.GameController;
+import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.network.clientpacket.CharacterDataCl;
-import direded.game.server.network.clientpacket.UserProfileCl;
-import direded.game.server.repository.CharacterRepository;
-import direded.game.server.storage.CharacterStorageService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -18,8 +19,19 @@ public class UserJoinEvent extends GameEvent {
 
 	public void innerProcess() {
 		// Initialize characters for userclient
-		var characters = CharacterStorageService.instance.findUserCharacters(user.getModel());
+		var name = user.getModel().getName();
+		System.out.println(name + " has joined");
+		var allCharacters = GameController.instance.getCharacters();
+		var characters = new ArrayList<CharacterObject>();
+		for (var character : allCharacters) {
+			if (character.getUser().getId().equals(user.getModel().getId())) {
+				characters.add(character);
+			}
+		}
 		user.setCharacters(characters);
+		for (var character : characters) {
+			character.setClient(user);
+		}
 
 		var packet = new CharacterDataCl(characters.get(0));
 		packet.send(user);

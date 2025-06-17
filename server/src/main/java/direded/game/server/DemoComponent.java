@@ -8,7 +8,7 @@ import direded.game.server.model.UserModel;
 import direded.game.server.model.UserSessionModel;
 import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
-import direded.game.server.storage.CharacterStorageService;
+import direded.game.server.storage.CharacterStorage;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class DemoComponent {
 
 	public String targetTile;
 
-	protected final CharacterStorageService storage;
+	protected final CharacterStorage storage;
 	protected final CharacterController characterController;
 
 	protected CharacterObject character;

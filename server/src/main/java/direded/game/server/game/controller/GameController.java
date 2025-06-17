@@ -7,8 +7,11 @@ import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.network.NetworkController;
 import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
-import direded.game.server.storage.CharacterStorageService;
+import direded.game.server.storage.CharacterStorage;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,17 +19,26 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
+@Getter
+@Setter
 public class GameController {
+
+	public static GameController instance;
+
+	@PostConstruct
+	private void onPostConstruct() {
+		instance = this;
+	}
 
 	private final DemoComponent demo;
 
-	protected final CharacterStorageService storage;
+	protected final CharacterStorage storage;
 	protected final GameMap gameMap = new GameMap();
 	protected final GameMapConfiguration gameMapConfiguration;
 
 	private final List<CharacterObject> characters = new ArrayList<>();
 	private final NetworkController networkController;
-	private final CharacterStorageService storageService;
+	private final CharacterStorage storageService;
 
 	private final UserSessionRepository userSessionRepository;
 	private final UserRepository userRepository;
@@ -37,15 +49,16 @@ public class GameController {
 		gameMapConfiguration.setup(gameMap);
 
 		var character = storage.findFirstCharacter();
-		if (character != null)
-			return;
-		var user = demo.createUser();
-		character = demo.createCharacter(user);
-		var session = demo.createUserSession(user);
+		if (character == null) {
+			var user = demo.createUser();
+			character = demo.createCharacter(user);
+			var session = demo.createUserSession(user);
 
-		userSessionRepository.save(session);
-		userRepository.save(user);
-		storage.saveCharacter(character);
+			userSessionRepository.save(session);
+			userRepository.save(user);
+			storage.saveCharacter(character);
+		}
+
 
 		characters.add(character);
 	}

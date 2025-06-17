@@ -14,6 +14,10 @@ public class UserLeaveEvent extends GameEvent {
 
 	@Override
 	public void innerProcess() {
-
+		var name = user.getModel().getName();
+		System.out.println(name + " has left");
+		for (var character : user.getCharacters()) {
+			character.setClient(null);
+		}
 	}
 }

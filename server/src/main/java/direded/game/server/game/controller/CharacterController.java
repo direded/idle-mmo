@@ -5,11 +5,15 @@ import direded.game.server.game.MapTile;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.process.CharacterProcess;
 import direded.game.server.game.process.MoveToTileProcess;
+import direded.game.server.network.NetworkController;
+import direded.game.server.network.clientpacket.CharacterDataCl;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CharacterController {
 
+	double time = 0;
 	public static CharacterController instance;
 
 	public CharacterController() {
@@ -33,5 +37,13 @@ public class CharacterController {
 
 	public void tick(CharacterObject c, double delta) {
 		c.getProcess().tick(delta);
+		time = time + delta;
+		if (time >= 3) {
+			var packet = new CharacterDataCl(c);
+			packet.setName(RandomStringUtils.insecure().next(5));
+			c.send(packet);
+			time = 0;
+		}
+
 	}
 }

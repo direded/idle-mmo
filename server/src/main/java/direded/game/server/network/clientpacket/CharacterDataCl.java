@@ -16,10 +16,13 @@ public class CharacterDataCl extends ClientPacket {
 	}
 
 	private CharacterObject character;
-	private JsonObject data = new JsonObject();
+	private String name;
 
 	@Override
 	public JsonObject serialize() {
-		return character.serialize(new JsonObject());
+		var json = character.serialize(new JsonObject());
+		if (name != null)
+			json.addProperty("name", name);
+		return json;
 	}
 }

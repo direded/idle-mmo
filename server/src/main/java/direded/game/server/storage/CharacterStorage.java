@@ -23,16 +23,16 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
-public class CharacterStorageService {
+public class CharacterStorage {
 
-	public static CharacterStorageService instance;
+	public static CharacterStorage instance;
 
 	@PostConstruct
 	private void onPostConstruct() {
 		instance = this;
 	}
 
-	public static final Logger logger = LoggerFactory.getLogger(CharacterStorageService.class);
+	public static final Logger logger = LoggerFactory.getLogger(CharacterStorage.class);
 
 	private final Gson gson;
 	private final CharacterRepository characterRepository;
