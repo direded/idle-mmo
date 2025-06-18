@@ -30,9 +30,7 @@ public class CharacterObject extends GameObject {
 	private UserClient client;
 
 	public static CharacterObject create() {
-		CharacterObject player = new CharacterObject();
-
-		return player;
+		return new CharacterObject();
 	}
 
 	public CharacterObject() {}
