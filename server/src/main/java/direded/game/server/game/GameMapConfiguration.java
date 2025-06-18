@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class GameMapConfiguration {
 
@@ -22,21 +24,21 @@ public class GameMapConfiguration {
 	}
 
 	private MapTile createWoodsTile() {
-		var tile = MapTile.create();
+		var tile = MapTile.create(UUID.fromString("7c3fcc1d-3423-400b-8aa1-814dd4c33d98"));
 		tile.setLabel("woods");
 		tile.setName("Whisperwood");
 		return tile;
 	}
 
 	private MapTile createTownTile() {
-		var tile = MapTile.create();
+		var tile = MapTile.create(UUID.fromString("dac9c446-a480-403a-9de6-dd2e86d68a8a"));
 		tile.setLabel("river");
 		tile.setName("Ironpeak Hold");
 		return tile;
 	}
 
 	private MapTile createRiverTile() {
-		var tile = MapTile.create();
+		var tile = MapTile.create(UUID.fromString("75910a59-e760-4539-855a-803bd4b8955d"));
 		tile.setLabel("town");
 		tile.setName("Ferryman’s Rest");
 		return tile;

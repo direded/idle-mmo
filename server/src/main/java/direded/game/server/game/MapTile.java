@@ -16,6 +16,12 @@ public class MapTile {
 		return tile;
 	}
 
+	public static MapTile create(UUID id) {
+		var tile = new MapTile();
+		tile.id = id;
+		return tile;
+	}
+
 	private UUID id;
 	private String label;
 	private String name;
