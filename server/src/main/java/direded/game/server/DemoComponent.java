@@ -35,18 +35,6 @@ public class DemoComponent {
 		instance = this;
 	}
 
-	public void init() {
-		character = storage.findFirstCharacter();
-		if (character != null)
-			return;
-		var user = createUser();
-		character = createCharacter(user);
-		var session = createUserSession(user);
-		userSessionRepository.save(session);
-		userRepository.save(user);
-		storage.saveCharacter(character);
-	}
-
 	public UserModel createUser() {
 		var a = new UserModel();
 		a.setId(UUID.randomUUID());

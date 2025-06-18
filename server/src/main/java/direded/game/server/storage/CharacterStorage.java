@@ -12,6 +12,7 @@ import direded.game.server.model.CharacterModel;
 import direded.game.server.model.UserModel;
 import direded.game.server.repository.CharacterRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,25 +35,29 @@ public class CharacterStorage {
 
 	public static final Logger logger = LoggerFactory.getLogger(CharacterStorage.class);
 
+	@Getter
+	private final List<CharacterObject> characters = new ArrayList<>();
+
 	private final Gson gson;
 	private final CharacterRepository characterRepository;
 
-	public void saveCharacter(CharacterObject character) {
-		characterRepository.save(toCharacterModel(character));
-	}
-
-	public CharacterObject findFirstCharacter() {
-		var characters = characterRepository.findAll();
-		return characters.isEmpty() ? null : toCharacterObject(characters.getFirst());
-	}
-
-	public List<CharacterObject> findUserCharacters(UserModel user) {
-		var models = characterRepository.findByUser(user);
-		var list = new ArrayList<CharacterObject>();
+	public void load() {
+		characters.clear();
+		var models = characterRepository.findAll();
 		for (var model : models) {
-			list.add(toCharacterObject(model));
+			characters.add(toCharacterObject(model));
 		}
-		return list;
+	}
+
+	public void save() {
+		for (var character : characters) {
+			characterRepository.save(toCharacterModel(character));
+		}
+	}
+
+	public void addCharacter(CharacterObject character) {
+		characters.add(character);
+		characterRepository.save(toCharacterModel(character));
 	}
 
 	private CharacterObject toCharacterObject(CharacterModel model) {
@@ -119,4 +124,5 @@ public class CharacterStorage {
 
 		return model;
 	}
+
 }

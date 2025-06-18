@@ -1,5 +1,6 @@
 package direded.game.server.game.events;
 
+import direded.game.server.game.Game;
 import direded.game.server.game.UserClient;
 import direded.game.server.game.controller.GameController;
 import direded.game.server.game.gameobject.CharacterObject;
@@ -21,19 +22,18 @@ public class UserJoinEvent extends GameEvent {
 		// Initialize characters for userclient
 		var name = user.getModel().getName();
 		System.out.println(name + " has joined");
-		var allCharacters = GameController.instance.getCharacters();
-		var characters = new ArrayList<CharacterObject>();
-		for (var character : allCharacters) {
+		var userCharacters = new ArrayList<CharacterObject>();
+		for (var character : Game.getCharacters()) {
 			if (character.getUser().getId().equals(user.getModel().getId())) {
-				characters.add(character);
+				userCharacters.add(character);
 			}
 		}
-		user.setCharacters(characters);
-		for (var character : characters) {
+		user.setCharacters(userCharacters);
+		for (var character : userCharacters) {
 			character.setClient(user);
 		}
 
-		var packet = new CharacterDataCl(characters.get(0));
+		var packet = new CharacterDataCl(userCharacters.get(0));
 		packet.send(user);
 	}
 

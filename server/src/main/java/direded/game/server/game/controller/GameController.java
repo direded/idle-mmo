@@ -1,6 +1,7 @@
 package direded.game.server.game.controller;
 
 import direded.game.server.DemoComponent;
+import direded.game.server.game.Game;
 import direded.game.server.game.GameMap;
 import direded.game.server.game.GameMapConfiguration;
 import direded.game.server.game.gameobject.CharacterObject;
@@ -36,19 +37,18 @@ public class GameController {
 	protected final GameMap gameMap = new GameMap();
 	protected final GameMapConfiguration gameMapConfiguration;
 
-	private final List<CharacterObject> characters = new ArrayList<>();
 	private final NetworkController networkController;
-	private final CharacterStorage storageService;
+	private final EventController eventController;
+	private final CharacterController characterController;
 
 	private final UserSessionRepository userSessionRepository;
 	private final UserRepository userRepository;
-	private final CharacterController characterController;
-	private final EventController eventController;
 
 	public void init() {
+		storage.load();
 		gameMapConfiguration.setup(gameMap);
 
-		var character = storage.findFirstCharacter();
+		var character = storage.getCharacters().isEmpty() ? null : storage.getCharacters().getFirst();
 		if (character == null) {
 			var user = demo.createUser();
 			character = demo.createCharacter(user);
@@ -56,24 +56,19 @@ public class GameController {
 
 			userSessionRepository.save(session);
 			userRepository.save(user);
-			storage.saveCharacter(character);
+			storage.addCharacter(character);
 		}
-
-
-		characters.add(character);
 	}
 
 	public void tick(double delta) {
-		for (var character : characters) {
+		for (var character : Game.getCharacters()) {
 			characterController.tick(character, delta);
 		}
 
 	}
 
 	public void finish() {
-		for (CharacterObject character : characters) {
-			storageService.saveCharacter(character);
-		}
+		storage.save();
 	}
 
 	public void processInput() {
