@@ -9,14 +9,8 @@ import lombok.Setter;
 public abstract class ServerPacket {
 
 	protected UserClient user;
-	private boolean processed = false;
 
-	public void process() {
-		innerProcess();
-		processed = true;
-	}
-
-	protected abstract void innerProcess();
+	protected abstract void process();
 
 
 }

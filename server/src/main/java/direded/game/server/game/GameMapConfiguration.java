@@ -1,5 +1,7 @@
 package direded.game.server.game;
 
+import direded.game.server.game.activity.AbstractActivity;
+import direded.game.server.game.activity.WoodGatherActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,11 @@ public class GameMapConfiguration {
 		var tile = MapTile.create(UUID.fromString("7c3fcc1d-3423-400b-8aa1-814dd4c33d98"));
 		tile.setLabel("woods");
 		tile.setName("Whisperwood");
+		tile.getActivities().add(
+			register(
+				WoodGatherActivity.create(UUID.fromString("5751a3aa-e382-499e-aedf-368abcda7e44"))
+			)
+		);
 		return tile;
 	}
 
@@ -57,9 +64,13 @@ public class GameMapConfiguration {
 
 	private void addToGameMap(GameMap gameMap, MapTile... tiles) {
 		for (MapTile tile : tiles) {
-			tile.setGameMap(gameMap);
 			gameMap.getTiles().put(tile.getId(), tile);
 			gameMap.getTilesLabel().put(tile.getLabel(), tile);
 		}
+	}
+
+	private AbstractActivity register(AbstractActivity activity) {
+		Game.activityStorage().addActivity(activity);
+		return activity;
 	}
 }

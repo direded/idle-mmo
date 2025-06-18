@@ -3,15 +3,14 @@ package direded.game.server.network;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import direded.game.server.game.UserClient;
-import direded.game.server.game.events.GameEvent;
 import direded.game.server.game.events.UserJoinEvent;
 import direded.game.server.game.events.UserLeaveEvent;
 import direded.game.server.model.UserModel;
 import direded.game.server.network.clientpacket.ClientPacket;
 import direded.game.server.network.handler.ServerPacketHandler;
-import direded.game.server.network.serverpacket.CommonSv;
+import direded.game.server.network.serverpacket.CommonSp;
 import direded.game.server.network.serverpacket.ServerPacket;
-import direded.game.server.network.serverpacket.TestSv;
+import direded.game.server.network.serverpacket.TestSp;
 import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
 import io.netty.channel.Channel;
@@ -53,8 +52,8 @@ public class NetworkController {
 	}
 
 	private void registerServerPacketHandlers() {
-		registerServerPacketHandler(PacketType.TEST_SV, TestSv::parse);
-		registerServerPacketHandler(PacketType.COMMON_SV, CommonSv::parse);
+		registerServerPacketHandler(PacketType.TEST_SV, TestSp::parse);
+		registerServerPacketHandler(PacketType.COMMON_SV, CommonSp::parse);
 	}
 
 	public UserClient registerClient(final Channel channel, String token) {

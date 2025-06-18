@@ -25,4 +25,8 @@ public class UserClient {
 	public void send(ClientPacket packet) {
 		NetworkController.instance.send(this, packet);
 	}
+
+	public CharacterObject getActiveCharacter() {
+		return characters.isEmpty() ? null : characters.getFirst();
+	}
 }

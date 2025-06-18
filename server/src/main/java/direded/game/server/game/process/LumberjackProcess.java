@@ -5,7 +5,7 @@ import direded.game.server.game.GameUtils;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.items.ItemStack;
 import direded.game.server.game.items.ItemType;
-import direded.game.server.network.clientpacket.CharacterDataCl;
+import direded.game.server.network.clientpacket.CharacterDataCp;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,7 +37,7 @@ public class LumberjackProcess extends CharacterProcess {
 				wood.setCount(wood.getCount() + 1);
 			}
 
-			var packet = new CharacterDataCl(character);
+			var packet = new CharacterDataCp(character);
 			character.send(packet);
 
 			time -= 2;

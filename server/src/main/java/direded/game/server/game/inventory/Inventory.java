@@ -30,4 +30,13 @@ public class Inventory extends ArrayList<ItemStack> {
 		}
 		return null;
 	}
+
+	public boolean contains(ItemType itemType) {
+		for (var itemStack : this) {
+			if (itemStack.getItem().getType().equals(itemType)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

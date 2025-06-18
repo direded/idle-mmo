@@ -2,9 +2,8 @@ package direded.game.server.game.events;
 
 import direded.game.server.game.Game;
 import direded.game.server.game.UserClient;
-import direded.game.server.game.controller.GameController;
 import direded.game.server.game.gameobject.CharacterObject;
-import direded.game.server.network.clientpacket.CharacterDataCl;
+import direded.game.server.network.clientpacket.CharacterDataCp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +32,7 @@ public class UserJoinEvent extends GameEvent {
 			character.setClient(user);
 		}
 
-		var packet = new CharacterDataCl(userCharacters.get(0));
+		var packet = new CharacterDataCp(userCharacters.get(0));
 		packet.send(user);
 	}
 

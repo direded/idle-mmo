@@ -1,6 +1,7 @@
 package direded.game.server.game;
 
 import com.google.gson.JsonObject;
+import direded.game.server.game.activity.AbstractActivity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,8 +26,9 @@ public class MapTile {
 	private UUID id;
 	private String label;
 	private String name;
-	private GameMap gameMap;
 	private Map<MapTile, Double> neighbors = new HashMap<>();
+
+	private List<AbstractActivity> activities = new ArrayList<>();
 
 	public Double getDistanceTo(MapTile tile) {
 		return neighbors.getOrDefault(tile, null);

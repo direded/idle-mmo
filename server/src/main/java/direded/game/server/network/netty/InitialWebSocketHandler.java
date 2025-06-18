@@ -3,7 +3,7 @@ package direded.game.server.network.netty;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import direded.game.server.network.NetworkController;
-import direded.game.server.network.clientpacket.TokenResponseCl;
+import direded.game.server.network.clientpacket.TokenResponseCp;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -35,7 +35,7 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 			var client = NetworkController.instance.registerClient(ctx.channel(), token);
 			if (client != null) {
 				System.out.println("Client registered!");
-				var packet = new TokenResponseCl(client.getModel(), true);
+				var packet = new TokenResponseCp(client.getModel(), true);
 				var jsonRedirect = json.get("redirect");
 				if (jsonRedirect.isJsonPrimitive() && jsonRedirect.getAsJsonPrimitive().isString()) {
 					packet.setRedirect(json.get("redirect").getAsString());
@@ -43,7 +43,7 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 				packet.send(client);
 				ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
 			} else {
-				new TokenResponseCl(null, false).send(ctx.channel());
+				new TokenResponseCp(null, false).send(ctx.channel());
 			}
 		}
 	}
