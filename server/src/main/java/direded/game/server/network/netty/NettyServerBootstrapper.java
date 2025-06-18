@@ -1,4 +1,4 @@
-package direded.game.server.network;
+package direded.game.server.network.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;

@@ -2,7 +2,7 @@ package direded.game.server;
 
 import direded.game.server.cli.CliComponent;
 import direded.game.server.game.GameLoopImpl;
-import direded.game.server.network.NettyServerBootstrapper;
+import direded.game.server.network.netty.NettyServerBootstrapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;

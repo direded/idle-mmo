@@ -1,4 +1,4 @@
-package direded.game.server.network;
+package direded.game.server.network.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

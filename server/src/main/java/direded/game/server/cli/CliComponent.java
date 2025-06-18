@@ -3,7 +3,7 @@ package direded.game.server.cli;
 import direded.game.server.DemoComponent;
 import direded.game.server.game.GameLoop;
 import direded.game.server.game.controller.GameController;
-import direded.game.server.network.NettyServerBootstrapper;
+import direded.game.server.network.netty.NettyServerBootstrapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
