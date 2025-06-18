@@ -20,7 +20,17 @@ public class CharacterDataCl extends ClientPacket {
 
 	@Override
 	public JsonObject serialize() {
-		var json = character.serialize(new JsonObject());
+
+		var json = new JsonObject();
+		var c = character;
+		json.addProperty("id", c.getId().toString());
+		json.addProperty("owner", c.getUser().getId().toString());
+		json.addProperty("name", c.getName());
+		json.addProperty("tile", c.getCurrentMapTile().getId().toString());
+
+		json.add("inventory", c.getInventory().serialize(new JsonObject()));
+		json.add("process", c.getProcess().serialize(new JsonObject()));
+
 		if (name != null)
 			json.addProperty("name", name);
 		return json;

@@ -48,15 +48,4 @@ public class CharacterObject extends GameObject {
 		}
 		NetworkController.instance.send(client.getChannel(), packet);
 	}
-
-	public JsonObject serialize(JsonObject json) {
-		json.addProperty("id", id.toString());
-		json.addProperty("owner", user.getId().toString());
-		json.addProperty("name", name);
-
-		json.add("tile", currentMapTile.serialize(new JsonObject()));
-		json.add("inventory", inventory.serialize(new JsonObject()));
-		json.add("process", process.serialize(new JsonObject()));
-		return json;
-	}
 }
