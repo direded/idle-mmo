@@ -4,6 +4,7 @@ import { useState, useContext, useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import { WsContext } from '@/context/WsContext'
 import { NetworkController } from '@/game/NetworkController';
+import Link from 'next/link';
 
 
 export default function TokenPage() {
@@ -41,6 +42,16 @@ export default function TokenPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-900 flex items-center justify-center">
+			{/* Navigation */}
+			<div className="absolute top-4 right-4 flex space-x-4">
+				<Link 
+					href="/character-planner" 
+					className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-white font-medium transition-colors"
+				>
+					Character Planner
+				</Link>
+			</div>
+
 			<div className="bg-gray-800 border-2 border-gray-700 p-8 w-full max-w-md">
 				<h1 className="text-2xl font-bold text-white mb-6 text-center">Enter Game Token</h1>
 				<form onSubmit={handleSubmit} className="space-y-4">
