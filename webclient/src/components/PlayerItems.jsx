@@ -5,6 +5,7 @@ import { useState } from 'react';
 export default function PlayerItems() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, item: null });
 
   // Sample player items data as a plain list
   const playerItems = [
@@ -57,6 +58,26 @@ export default function PlayerItems() {
     unique: 'text-orange-400'
   };
 
+  const handleContextMenu = (e, item) => {
+    e.preventDefault();
+    setContextMenu({
+      show: true,
+      x: e.clientX,
+      y: e.clientY,
+      item: item
+    });
+  };
+
+  const handleContextMenuAction = (action) => {
+    console.log(`${action} action for item:`, contextMenu.item.name);
+    // Here you would implement the actual action logic
+    setContextMenu({ show: false, x: 0, y: 0, item: null });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu({ show: false, x: 0, y: 0, item: null });
+  };
+
   const ItemRow = ({ item }) => (
     <tr 
       className="hover:bg-gray-600"
@@ -69,6 +90,7 @@ export default function PlayerItems() {
         setMousePosition({ x: 0, y: 0 });
       }}
       onMouseMove={(e) => setMousePosition({ x: e.clientX, y: e.clientY })}
+      onContextMenu={(e) => handleContextMenu(e, item)}
     >
       <td className="py-0.5 px-1 w-6">
         <img 
@@ -96,7 +118,7 @@ export default function PlayerItems() {
 
     return (
       <div 
-        className="fixed z-50 bg-gray-800 border border-gray-600 rounded-lg p-2 shadow-lg max-w-xs pointer-events-none"
+        className="fixed z-50 bg-gray-800 border border-gray-600 rounded p-2 shadow-lg max-w-xs pointer-events-none"
         style={{ left: `${mousePosition.x + 10}px`, top: `${mousePosition.y + 10}px` }}
       >
         <div className="flex items-center mb-1">
@@ -124,40 +146,107 @@ export default function PlayerItems() {
     );
   };
 
+  const ContextMenu = () => {
+    if (!contextMenu.show || !contextMenu.item) return null;
+
+    const isConsumable = contextMenu.item.name.toLowerCase().includes('potion');
+    const isEquipment = contextMenu.item.name.toLowerCase().includes('sword') || 
+                       contextMenu.item.name.toLowerCase().includes('armor') ||
+                       contextMenu.item.name.toLowerCase().includes('dagger') ||
+                       contextMenu.item.name.toLowerCase().includes('mail');
+
+    return (
+      <div 
+        className="fixed z-50 bg-gray-800 border border-gray-600 rounded shadow-lg min-w-32"
+        style={{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }}
+      >
+        <div className="py-1">
+          {isConsumable && (
+            <button
+              onClick={() => handleContextMenuAction('use')}
+              className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+            >
+              Use
+            </button>
+          )}
+          {isEquipment && (
+            <button
+              onClick={() => handleContextMenuAction('equip')}
+              className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+            >
+              Equip
+            </button>
+          )}
+          <button
+            onClick={() => handleContextMenuAction('examine')}
+            className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+          >
+            Examine
+          </button>
+          <button
+            onClick={() => handleContextMenuAction('drop')}
+            className="w-full px-3 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
+          >
+            Drop
+          </button>
+          {contextMenu.item.count > 1 && (
+            <button
+              onClick={() => handleContextMenuAction('drop-all')}
+              className="w-full px-3 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
+            >
+              Drop All
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div 
-      className="flex-1 p-1 overflow-y-auto relative"
+      className="flex-1 flex flex-col h-full"
       onMouseLeave={() => {
         setHoveredItem(null);
         setMousePosition({ x: 0, y: 0 });
       }}
+      onClick={closeContextMenu}
     >
-      <h2 className="text-xs font-bold text-orange-400 mb-1">Player Items</h2>
+      <div className="flex-shrink-0 p-1">
+        <h2 className="text-xs font-bold text-orange-400 mb-1">Inventory</h2>
+        
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-600">
+              <th className="py-0.5 px-1 text-left w-6"></th>
+              <th className="py-0.5 px-1 text-left">
+                <span className="text-gray-400 text-[9px] font-bold">Name</span>
+              </th>
+              <th className="py-0.5 px-1 text-right">
+                <span className="text-gray-400 text-[9px] font-bold">Weight</span>
+              </th>
+              <th className="py-0.5 px-1 text-right">
+                <span className="text-gray-400 text-[9px] font-bold">Count</span>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
       
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-600">
-            <th className="py-0.5 px-1 text-left w-6"></th>
-            <th className="py-0.5 px-1 text-left">
-              <span className="text-gray-400 text-[9px] font-bold">Name</span>
-            </th>
-            <th className="py-0.5 px-1 text-right">
-              <span className="text-gray-400 text-[9px] font-bold">Weight</span>
-            </th>
-            <th className="py-0.5 px-1 text-right">
-              <span className="text-gray-400 text-[9px] font-bold">Count</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {playerItems.map(item => (
-            <ItemRow key={item.id} item={item} />
-          ))}
-        </tbody>
-      </table>
+      <div className="flex-1 overflow-y-auto p-1 min-h-0">
+        <table className="w-full">
+          <tbody>
+            {playerItems.map(item => (
+              <ItemRow key={item.id} item={item} />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Fixed Tooltip */}
       <Tooltip />
+      
+      {/* Context Menu */}
+      <ContextMenu />
     </div>
   );
 } 
