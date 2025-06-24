@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PlayerItems from '../../components/PlayerItems';
 import GameInfo from '../../components/GameInfo';
 
 export default function CharacterPlanner() {
+
+	useEffect(() => {
+		document.addEventListener('contextmenu', event => event.preventDefault());
+	}, []);
+
+
   const [characterData, setCharacterData] = useState({
     name: 'Exile',
     level: 1,
