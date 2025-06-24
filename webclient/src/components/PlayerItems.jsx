@@ -97,15 +97,15 @@ export default function PlayerItems() {
         />
       </td>
       <td className="py-0.5 px-1">
-        <div className={`text-[10px] ${rarityColors[item.rarity]} truncate`}>
+        <div className={`text-xs ${rarityColors[item.rarity]} truncate`}>
           {item.name}
         </div>
       </td>
       <td className="py-0.5 px-1 text-right">
-        <span className="text-gray-400 text-[9px]">{item.weight}kg</span>
+        <span className="text-gray-400 text-xxs">{item.weight}kg</span>
       </td>
       <td className="py-0.5 px-1 text-right">
-        <span className="text-gray-400 text-[9px]">{item.count}</span>
+        <span className="text-gray-400 text-xxs">{item.count}</span>
       </td>
     </tr>
   );

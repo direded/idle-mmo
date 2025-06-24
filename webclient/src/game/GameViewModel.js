@@ -61,6 +61,105 @@ export class GameViewModel {
 		this.subscribers.forEach(callback => callback(this.state));
 	}
 
+	// Log Management Methods (MVVM Architecture)
+	
+	/**
+	 * Add a single log entry with timestamp
+	 * @param {string} message - The log message
+	 * @param {string} type - The type of log (optional, defaults to 'info')
+	 */
+	addLog(message, type = 'info') {
+		const timestamp = new Date().toLocaleTimeString('en-US', { 
+			hour12: false, 
+			hour: '2-digit', 
+			minute: '2-digit' 
+		});
+		const logEntry = `[${timestamp}] ${message}`;
+		
+		this.state.logs = [...this.state.logs, { type, content: logEntry, timestamp }];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Add multiple log entries at once
+	 * @param {Array} messages - Array of log messages
+	 * @param {string} type - The type of log for all messages (optional)
+	 */
+	addLogs(messages, type = 'info') {
+		const timestamp = new Date().toLocaleTimeString('en-US', { 
+			hour12: false, 
+			hour: '2-digit', 
+			minute: '2-digit' 
+		});
+		
+		const newLogs = messages.map(message => ({
+			type,
+			content: `${timestamp} ${message}`,
+			timestamp
+		}));
+		
+		this.state.logs = [...this.state.logs, ...newLogs];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Set logs to a specific array (replaces all existing logs)
+	 * @param {Array} logs - Array of log objects or strings
+	 */
+	setLogs(logs) {
+		if (Array.isArray(logs)) {
+			// If logs are strings, convert them to log objects
+			const processedLogs = logs.map(log => {
+				if (typeof log === 'string') {
+					const timestamp = new Date().toLocaleTimeString('en-US', { 
+						hour12: false, 
+						hour: '2-digit', 
+						minute: '2-digit' 
+					});
+					return { type: 'info', content: log, timestamp };
+				}
+				return log;
+			});
+			
+			this.state.logs = processedLogs;
+			this.notifySubscribers();
+		}
+	}
+
+	/**
+	 * Clear all logs
+	 */
+	clearLogs() {
+		this.state.logs = [];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Get all logs as formatted strings for display
+	 * @returns {Array} Array of formatted log strings
+	 */
+	getLogsAsStrings() {
+		return this.state.logs.map(log => log.content);
+	}
+
+	/**
+	 * Get logs filtered by type
+	 * @param {string} type - The type of logs to filter by
+	 * @returns {Array} Array of filtered log objects
+	 */
+	getLogsByType(type) {
+		return this.state.logs.filter(log => log.type === type);
+	}
+
+	/**
+	 * Get the most recent N logs
+	 * @param {number} count - Number of recent logs to return
+	 * @returns {Array} Array of recent log objects
+	 */
+	getRecentLogs(count = 10) {
+		return this.state.logs.slice(-count);
+	}
+
 	// State update methods
 	setActiveTab(tab) {
 		this.state.activeTab = tab;

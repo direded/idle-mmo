@@ -3,12 +3,30 @@
 import { useState, useEffect } from 'react';
 import PlayerItems from '../../components/PlayerItems';
 import GameInfo from '../../components/GameInfo';
+import ActivityLog from '../../components/ActivityLog';
+import { GameViewModel } from '../../game/GameViewModel';
 
 export default function CharacterPlanner() {
+	const [gameViewModel] = useState(() => new GameViewModel());
 
 	useEffect(() => {
 		document.addEventListener('contextmenu', event => event.preventDefault());
-	}, []);
+		
+		// Initialize with some sample logs
+		gameViewModel.addLogs([
+			'Entered the character planner',
+			'Loaded character data for Exile',
+			'Initialized character planner interface',
+			'Connected to game server',
+			'Starting character planner application',
+			'Loading character assets',
+			'Initializing game components',
+			'Establishing connection',
+			'Application startup complete',
+			'Loading configuration files',
+			'Starting character planner'
+		]);
+	}, [gameViewModel]);
 
 
   const [characterData, setCharacterData] = useState({
@@ -66,9 +84,12 @@ export default function CharacterPlanner() {
     switch (activeView) {
       case 'stats':
         return (
-          <div className="p-4 text-center text-gray-400">
-            <h2 className="text-lg font-bold mb-4">Location Overview</h2>
-            <p>Current location and world information will be displayed here.</p>
+          <div className="flex flex-col h-full">
+            <div className="flex-1 p-4 text-center text-gray-400">
+              <h2 className="text-lg font-bold mb-4">Location Overview</h2>
+              <p>Current location and world information will be displayed here.</p>
+            </div>
+            <ActivityLog gameViewModel={gameViewModel} />
           </div>
         );
       case 'skills':
