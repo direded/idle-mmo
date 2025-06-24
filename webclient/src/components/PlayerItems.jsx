@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function PlayerItems() {
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, item: null });
+  const [menu, setMenu] = useState({ show: false, x: 0, y: 0, item: null });
+  const rowRefs = useRef({});
 
   // Sample player items data as a plain list
   const playerItems = [
@@ -58,44 +57,32 @@ export default function PlayerItems() {
     unique: 'text-orange-400'
   };
 
-  const handleContextMenu = (e, item) => {
+  const handleRowClick = (e, item) => {
     e.preventDefault();
-    setContextMenu({
-      show: true,
-      x: e.clientX,
-      y: e.clientY,
-      item: item
-    });
+    setMenu({ show: true, x: e.clientX, y: e.clientY, item });
   };
 
-  const handleContextMenuAction = (action) => {
-    console.log(`${action} action for item:`, contextMenu.item.name);
-    // Here you would implement the actual action logic
-    setContextMenu({ show: false, x: 0, y: 0, item: null });
+  const handleMenuAction = (action) => {
+    if (menu.item) {
+      console.log(`${action} action for item:`, menu.item.name);
+    }
+    setMenu({ show: false, x: 0, y: 0, item: null });
   };
 
-  const closeContextMenu = () => {
-    setContextMenu({ show: false, x: 0, y: 0, item: null });
+  const closeMenu = () => {
+    setMenu({ show: false, x: 0, y: 0, item: null });
   };
 
   const ItemRow = ({ item }) => (
-    <tr 
-      className="hover:bg-gray-600"
-      onMouseEnter={(e) => {
-        setHoveredItem(item);
-        setMousePosition({ x: e.clientX, y: e.clientY });
-      }}
-      onMouseLeave={() => {
-        setHoveredItem(null);
-        setMousePosition({ x: 0, y: 0 });
-      }}
-      onMouseMove={(e) => setMousePosition({ x: e.clientX, y: e.clientY })}
-      onContextMenu={(e) => handleContextMenu(e, item)}
+    <tr
+      ref={el => rowRefs.current[item.id] = el}
+      className="hover:bg-gray-600 cursor-pointer"
+      onClick={e => handleRowClick(e, item)}
     >
       <td className="py-0.5 px-1 w-6">
-        <img 
-          src={item.icon} 
-          alt={item.name} 
+        <img
+          src={item.icon}
+          alt={item.name}
           className="w-4 h-4"
         />
       </td>
@@ -113,86 +100,70 @@ export default function PlayerItems() {
     </tr>
   );
 
-  const Tooltip = () => {
-    if (!hoveredItem) return null;
-
+  const MenuWindow = () => {
+    if (!menu.show || !menu.item) return null;
+    const item = menu.item;
+    const isConsumable = item.name.toLowerCase().includes('potion');
+    const isEquipment = item.name.toLowerCase().includes('sword') ||
+      item.name.toLowerCase().includes('armor') ||
+      item.name.toLowerCase().includes('dagger') ||
+      item.name.toLowerCase().includes('mail');
     return (
-      <div 
-        className="fixed z-50 bg-gray-800 border border-gray-600 rounded p-2 shadow-lg max-w-xs pointer-events-none"
-        style={{ left: `${mousePosition.x + 10}px`, top: `${mousePosition.y + 10}px` }}
+      <div
+        className="fixed z-[9999] bg-gray-800 border border-gray-600 rounded p-3 shadow-lg flex text-left"
+        style={{ left: menu.x + 4, top: menu.y + 4 }}
+        onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center mb-1">
-          <img 
-            src={hoveredItem.icon} 
-            alt={hoveredItem.name} 
-            className="w-6 h-6 mr-2"
-          />
-          <h4 className={`font-bold text-xs ${rarityColors[hoveredItem.rarity]}`}>
-            {hoveredItem.name}
-          </h4>
-        </div>
-        <div className="space-y-0.5">
-          <div className="text-gray-300 text-[10px]">
-            Count: {hoveredItem.count}
+        {/* Left: Tooltip/info */}
+        <div className="pr-2 border-r border-gray-700 min-w-[90px] flex flex-col items-start justify-center">
+          <div className="flex items-center mb-1">
+            <img
+              src={item.icon}
+              alt={item.name}
+              className="w-6 h-6 mr-1"
+            />
+            <h4 className={`font-bold text-xs ${rarityColors[item.rarity]}`}>{item.name}</h4>
           </div>
-          <div className="text-gray-300 text-[10px]">
-            Weight: {hoveredItem.weight}kg
-          </div>
-          <div className="text-gray-400 text-[9px] capitalize">
-            Rarity: {hoveredItem.rarity}
+          <div className="space-y-0.5">
+            <div className="text-gray-300 text-[10px]">Count: {item.count}</div>
+            <div className="text-gray-300 text-[10px]">Weight: {item.weight}kg</div>
+            <div className="text-gray-400 text-[9px] capitalize">Rarity: {item.rarity}</div>
           </div>
         </div>
-      </div>
-    );
-  };
-
-  const ContextMenu = () => {
-    if (!contextMenu.show || !contextMenu.item) return null;
-
-    const isConsumable = contextMenu.item.name.toLowerCase().includes('potion');
-    const isEquipment = contextMenu.item.name.toLowerCase().includes('sword') || 
-                       contextMenu.item.name.toLowerCase().includes('armor') ||
-                       contextMenu.item.name.toLowerCase().includes('dagger') ||
-                       contextMenu.item.name.toLowerCase().includes('mail');
-
-    return (
-      <div 
-        className="fixed z-50 bg-gray-800 border border-gray-600 rounded shadow-lg min-w-32"
-        style={{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }}
-      >
-        <div className="py-1">
+        {/* Right: Actions */}
+        <div className="pl-1 flex flex-col items-start justify-center min-w-[90px]">
           {isConsumable && (
             <button
-              onClick={() => handleContextMenuAction('use')}
-              className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+              onClick={() => handleMenuAction('use')}
+              className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
             >
               Use
             </button>
           )}
           {isEquipment && (
             <button
-              onClick={() => handleContextMenuAction('equip')}
-              className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+              onClick={() => handleMenuAction('equip')}
+              className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
             >
               Equip
             </button>
           )}
           <button
-            onClick={() => handleContextMenuAction('examine')}
-            className="w-full px-3 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
+            onClick={() => handleMenuAction('examine')}
+            className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
           >
             Examine
           </button>
           <button
-            onClick={() => handleContextMenuAction('drop')}
-            className="w-full px-3 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
+            onClick={() => handleMenuAction('drop')}
+            className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
           >
             Drop
           </button>
-          {contextMenu.item.count > 1 && (
+          {item.count > 1 && (
             <button
-              onClick={() => handleContextMenuAction('drop-all')}
-              className="w-full px-3 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
+              onClick={() => handleMenuAction('drop-all')}
+              className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
             >
               Drop All
             </button>
@@ -202,18 +173,18 @@ export default function PlayerItems() {
     );
   };
 
+  // Hide menu on click outside
+  const handlePanelClick = (e) => {
+    if (menu.show) setMenu({ show: false, x: 0, y: 0, item: null });
+  };
+
   return (
-    <div 
-      className="flex-1 flex flex-col h-full"
-      onMouseLeave={() => {
-        setHoveredItem(null);
-        setMousePosition({ x: 0, y: 0 });
-      }}
-      onClick={closeContextMenu}
+    <div
+      className="flex-1 flex flex-col h-full min-h-0"
+      onClick={handlePanelClick}
     >
       <div className="flex-shrink-0 p-1">
         <h2 className="text-xs font-bold text-orange-400 mb-1">Inventory</h2>
-        
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-600">
@@ -231,7 +202,6 @@ export default function PlayerItems() {
           </thead>
         </table>
       </div>
-      
       <div className="flex-1 overflow-y-auto p-1 min-h-0">
         <table className="w-full">
           <tbody>
@@ -241,12 +211,8 @@ export default function PlayerItems() {
           </tbody>
         </table>
       </div>
-
-      {/* Fixed Tooltip */}
-      <Tooltip />
-      
-      {/* Context Menu */}
-      <ContextMenu />
+      {/* Combined Tooltip/Action Menu */}
+      <MenuWindow />
     </div>
   );
 } 
