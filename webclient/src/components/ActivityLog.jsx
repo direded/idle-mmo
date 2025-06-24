@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ActivityLog({ gameViewModel, height = "h-32" }) {
   const [logs, setLogs] = useState([]);
+  const [isResizing, setIsResizing] = useState(false);
+  const [currentHeight, setCurrentHeight] = useState(128); // Default 128px (h-32)
+  const resizeRef = useRef(null);
 
   useEffect(() => {
     if (gameViewModel) {
@@ -18,6 +21,44 @@ export default function ActivityLog({ gameViewModel, height = "h-32" }) {
       return unsubscribe;
     }
   }, [gameViewModel]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (isResizing && resizeRef.current) {
+        const container = resizeRef.current.parentElement;
+        const containerRect = container.getBoundingClientRect();
+        const containerBottom = containerRect.bottom;
+        const newHeight = containerBottom - e.clientY;
+        
+        // Set minimum and maximum heights
+        const minHeight = 64; // h-16
+        const maxHeight = 400; // h-100
+        
+        if (newHeight >= minHeight && newHeight <= maxHeight) {
+          setCurrentHeight(newHeight);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
+  const handleResizeStart = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
 
   // Default logs if no GameViewModel provided
   const defaultLogs = [
@@ -35,13 +76,33 @@ export default function ActivityLog({ gameViewModel, height = "h-32" }) {
   ];
 
   const displayLogs = logs.length > 0 ? logs : defaultLogs;
+  const contentHeight = currentHeight - 40; // Subtract header height
 
   return (
-    <div className={`flex-shrink-0 ${height} border-t border-gray-700 bg-gray-800`}>
+    <div 
+      ref={resizeRef}
+      className="flex-shrink-0 bg-gray-800"
+      style={{ height: `${currentHeight}px` }}
+    >
+      {/* Resize handle - positioned at top */}
+      <div
+        className="h-0.5 bg-gray-600 cursor-ns-resize hover:bg-gray-500 transition-colors flex items-center justify-center"
+        onMouseDown={handleResizeStart}
+        style={{ cursor: 'ns-resize' }}
+      >
+        <div className="flex space-x-1">
+          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+        </div>
+      </div>
       <div className="flex-shrink-0 p-1">
         <h2 className="text-xs font-bold text-orange-400 mb-1">Activity Log</h2>
       </div>
-      <div className={`${height === "h-32" ? "h-24" : "h-20"} overflow-y-auto p-1 scrollbar-a select-text`}>
+      <div 
+        className="overflow-y-auto p-1 scrollbar-a select-text"
+        style={{ height: `${contentHeight}px` }}
+      >
         <div className="text-xs text-gray-300">
           {displayLogs.map((log, index) => (
             <div key={index}>{log}</div>
