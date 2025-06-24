@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import CharacterStats from '../../components/CharacterStats';
+import PlayerItems from '../../components/PlayerItems';
 import GameInfo from '../../components/GameInfo';
 
 export default function CharacterPlanner() {
@@ -147,10 +147,7 @@ export default function CharacterPlanner() {
             </div>
           </div>
 
-          <CharacterStats 
-            stats={characterData.stats} 
-            onStatUpdate={updateStat}
-          />
+          <PlayerItems />
         </div>
 
         {/* Main Canvas */}
