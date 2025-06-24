@@ -67,8 +67,8 @@ export default function CharacterPlanner() {
       case 'stats':
         return (
           <div className="p-4 text-center text-gray-400">
-            <h2 className="text-lg font-bold mb-4">Character Statistics Overview</h2>
-            <p>Detailed character statistics and calculations will be displayed here.</p>
+            <h2 className="text-lg font-bold mb-4">Location Overview</h2>
+            <p>Current location and world information will be displayed here.</p>
           </div>
         );
       case 'skills':
@@ -112,41 +112,29 @@ export default function CharacterPlanner() {
             <div className="grid grid-cols-2 gap-1">
               <button
                 onClick={() => setActiveView('stats')}
-                className={`px-1 py-0.5 rounded text-[10px] transition-colors ${
+                className={`px-1 py-0.5 rounded text-[10px] transition-colors cursor-pointer ${
                   activeView === 'stats' 
                     ? 'bg-orange-600 text-white' 
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
-                Stats
+                Location
               </button>
               <button
-                onClick={() => setActiveView('skills')}
-                className={`px-1 py-0.5 rounded text-[10px] transition-colors ${
-                  activeView === 'skills' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                disabled
+                className="px-1 py-0.5 rounded text-[10px] bg-gray-800 text-gray-500 cursor-not-allowed"
               >
                 Skills
               </button>
               <button
-                onClick={() => setActiveView('passives')}
-                className={`px-1 py-0.5 rounded text-[10px] transition-colors ${
-                  activeView === 'passives' 
-                    ? 'bg-green-600 text-white' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                disabled
+                className="px-1 py-0.5 rounded text-[10px] bg-gray-800 text-gray-500 cursor-not-allowed"
               >
                 Passives
               </button>
               <button
-                onClick={() => setActiveView('equipment')}
-                className={`px-1 py-0.5 rounded text-[10px] transition-colors ${
-                  activeView === 'equipment' 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                disabled
+                className="px-1 py-0.5 rounded text-[10px] bg-gray-800 text-gray-500 cursor-not-allowed"
               >
                 Equipment
               </button>
