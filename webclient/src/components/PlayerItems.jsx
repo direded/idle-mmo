@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function PlayerItems() {
   const [menu, setMenu] = useState({ show: false, x: 0, y: 0, item: null });
@@ -57,6 +57,16 @@ export default function PlayerItems() {
     unique: 'text-orange-400'
   };
 
+	useEffect(() => {
+		document.addEventListener('click', handlePanelClick);
+	}, []);
+
+	// Hide menu on click outside
+	const handlePanelClick = (e) => {
+		console.log('clicked', menu);
+		setMenu((menu) => menu.show ? { show: false, x: 0, y: 0, item: null } : menu);
+	};
+
   const handleRowClick = (e, item) => {
     e.preventDefault();
     setMenu({ show: true, x: e.clientX, y: e.clientY, item });
@@ -77,7 +87,7 @@ export default function PlayerItems() {
     <tr
       ref={el => rowRefs.current[item.id] = el}
       className="hover:bg-gray-600 cursor-pointer"
-      onClick={e => handleRowClick(e, item)}
+      onContextMenu={e => handleRowClick(e, item)}
     >
       <td className="py-0.5 px-1 w-6">
         <img
@@ -109,79 +119,72 @@ export default function PlayerItems() {
       item.name.toLowerCase().includes('dagger') ||
       item.name.toLowerCase().includes('mail');
     return (
-      <div
-        className="fixed z-[9999] bg-gray-800 border border-gray-600 rounded p-3 shadow-lg flex text-left"
-        style={{ left: menu.x + 4, top: menu.y + 4 }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Left: Tooltip/info */}
-        <div className="pr-2 border-r border-gray-700 min-w-[90px] flex flex-col items-start justify-center">
-          <div className="flex items-center mb-1">
-            <img
-              src={item.icon}
-              alt={item.name}
-              className="w-6 h-6 mr-1"
-            />
-            <h4 className={`font-bold text-xs ${rarityColors[item.rarity]}`}>{item.name}</h4>
-          </div>
-          <div className="space-y-0.5">
-            <div className="text-gray-300 text-[10px]">Count: {item.count}</div>
-            <div className="text-gray-300 text-[10px]">Weight: {item.weight}kg</div>
-            <div className="text-gray-400 text-[9px] capitalize">Rarity: {item.rarity}</div>
-          </div>
-        </div>
-        {/* Right: Actions */}
-        <div className="pl-1 flex flex-col items-start justify-center min-w-[90px]">
-          {isConsumable && (
-            <button
-              onClick={() => handleMenuAction('use')}
-              className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
-            >
-              Use
-            </button>
-          )}
-          {isEquipment && (
-            <button
-              onClick={() => handleMenuAction('equip')}
-              className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
-            >
-              Equip
-            </button>
-          )}
-          <button
-            onClick={() => handleMenuAction('examine')}
-            className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600"
-          >
-            Examine
-          </button>
-          <button
-            onClick={() => handleMenuAction('drop')}
-            className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
-          >
-            Drop
-          </button>
-          {item.count > 1 && (
-            <button
-              onClick={() => handleMenuAction('drop-all')}
-              className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600"
-            >
-              Drop All
-            </button>
-          )}
-        </div>
-      </div>
+			<div
+				className="fixed z-[9999] bg-gray-800 border border-gray-600 rounded p-2 shadow-lg flex text-left"
+				style={{ left: menu.x + 4, top: menu.y + 4 }}
+			>
+				{/* Left: Tooltip/info */}
+				<div className="pr-2 border-r border-gray-700 min-w-[90px] flex flex-col items-start justify-center z-[9999]">
+					<div className="flex items-center mb-1">
+						<img
+							src={item.icon}
+							alt={item.name}
+							className="w-6 h-6 mr-1"
+						/>
+						<h4 className={`font-bold text-xs ${rarityColors[item.rarity]}`}>{item.name}</h4>
+					</div>
+					<div className="space-y-0.5">
+						<div className="text-gray-300 text-[10px]">Count: {item.count}</div>
+						<div className="text-gray-300 text-[10px]">Weight: {item.weight}kg</div>
+						<div className="text-gray-400 text-[9px] capitalize">Rarity: {item.rarity}</div>
+					</div>
+				</div>
+				{/* Right: Actions */}
+				<div className="pl-1 flex flex-col items-start justify-center min-w-[90px] z-[9999]">
+					{isConsumable && (
+						<button
+							onClick={() => handleMenuAction('use')}
+							className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+						>
+							Use
+						</button>
+					)}
+					{isEquipment && (
+						<button
+							onClick={() => handleMenuAction('equip')}
+							className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+						>
+							Equip
+						</button>
+					)}
+					<button
+						onClick={() => handleMenuAction('examine')}
+						className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+					>
+						Examine
+					</button>
+					<button
+						onClick={() => handleMenuAction('drop')}
+						className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600 hover:cursor-pointer"
+					>
+						Drop
+					</button>
+					{item.count > 1 && (
+						<button
+							onClick={() => handleMenuAction('drop-all')}
+							className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600 hover:cursor-pointer"
+						>
+							Drop All
+						</button>
+					)}
+				</div>
+			</div>
     );
-  };
-
-  // Hide menu on click outside
-  const handlePanelClick = (e) => {
-    if (menu.show) setMenu({ show: false, x: 0, y: 0, item: null });
   };
 
   return (
     <div
       className="flex-1 flex flex-col h-full min-h-0"
-      onClick={handlePanelClick}
     >
       <div className="flex-shrink-0 p-1">
         <h2 className="text-xs font-bold text-orange-400 mb-1">Inventory</h2>
