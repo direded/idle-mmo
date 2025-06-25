@@ -27,9 +27,9 @@ export default function LocationInfo({ gameViewModel }) {
   }, [gameViewModel]);
 
   const handleActivityClick = (activity) => {
-    console.log(`${activity} clicked`);
+    console.log(`${activity.name} clicked`);
     if (gameViewModel) {
-      gameViewModel.addLog(`Started activity: ${activity}`, 'activity');
+      gameViewModel.addLog(`Started activity: ${activity.name}`, 'activity');
     }
   };
 
@@ -57,11 +57,11 @@ export default function LocationInfo({ gameViewModel }) {
             <div className="space-y-0">
               {currentLocation.activities.map((activity, index) => (
                 <div 
-                  key={index}
+                  key={activity.uuid || index}
                   className="text-sm text-gray-300 cursor-pointer hover:bg-gray-600 hover:text-white transition-colors py-0.5 px-1" 
                   onClick={() => handleActivityClick(activity)}
                 >
-                  {activity}
+                  {activity.name}
                 </div>
               ))}
             </div>

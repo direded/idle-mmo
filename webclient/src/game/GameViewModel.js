@@ -13,6 +13,7 @@ export class GameViewModel {
 			message: '',
 			logs: [],
 			character: {
+				uuid: '',
 				name: '',
 				health: 0,
 				maxHealth: 0,
@@ -22,11 +23,13 @@ export class GameViewModel {
 				maxEnergy: 0
 			},
 			equipment: {
+				uuid: '',
 				head: '',
 				chest: '',
 				weapon: ''
 			},
 			inventory: {
+				uuid: '',
 				gold: 0,
 				potion: 0,
 				food: 0,
@@ -44,29 +47,33 @@ export class GameViewModel {
 				]
 			},
 			currentLocation: {
+				uuid: '',
 				name: 'Forest Clearing',
 				description: 'A peaceful clearing surrounded by tall trees. The air is fresh and you can hear birds chirping in the distance. This area is known for its abundant resources and wildlife.',
 				activities: [
-					'Gathering Wood',
-					'Hunting',
-					'Gathering Herbs',
-					'Fishing'
+					{ uuid: '', name: 'Gathering Wood' },
+					{ uuid: '', name: 'Hunting' },
+					{ uuid: '', name: 'Gathering Herbs' },
+					{ uuid: '', name: 'Fishing' }
 				]
 			},
 			nearbyLocations: [
 				{
+					uuid: '',
 					name: 'Dark Forest',
 					description: 'A dense forest with ancient trees. Home to dangerous creatures.',
 					distance: '0.5 km',
 					direction: 'NW'
 				},
 				{
+					uuid: '',
 					name: 'Mountain Pass',
 					description: 'A narrow path through the mountains. Rich in minerals and ores.',
 					distance: '1.2 km',
 					direction: 'W'
 				},
 				{
+					uuid: '',
 					name: 'Riverside Camp',
 					description: 'A peaceful camp by the river. Perfect for fishing and water activities.',
 					distance: '0.8 km',
@@ -74,20 +81,24 @@ export class GameViewModel {
 				}
 			],
 			settings: {
+				uuid: '',
 				soundVolume: 0,
 				musicVolume: 0,
 				showFPS: false
 			},
 			process: {
+				uuid: '',
 				type: "null"
 			},
 			time: {
+				uuid: '',
 				day: 'Monday',
 				date: '14.05.203',
 				time: '13:48',
 				formatted: '14.05.203 13:48'
 			},
 			weather: {
+				uuid: '',
 				condition: 'Sunny',
 				temperature: 22,
 				humidity: 65,
@@ -141,7 +152,7 @@ export class GameViewModel {
 
 	/**
 	 * Set available activities for current location
-	 * @param {Array} activities - Array of activity names
+	 * @param {Array} activities - Array of activity objects with id and name
 	 */
 	setLocationActivities(activities) {
 		this.state.currentLocation.activities = [...activities];
@@ -150,21 +161,26 @@ export class GameViewModel {
 
 	/**
 	 * Add activity to current location
-	 * @param {string} activity - Activity name to add
+	 * @param {string} activityName - Activity name to add
 	 */
-	addLocationActivity(activity) {
-		if (!this.state.currentLocation.activities.includes(activity)) {
-			this.state.currentLocation.activities.push(activity);
+	addLocationActivity(activityName) {
+		const activityExists = this.state.currentLocation.activities.some(act => act.name === activityName);
+		if (!activityExists) {
+			const newActivity = {
+				uuid: '',
+				name: activityName
+			};
+			this.state.currentLocation.activities.push(newActivity);
 			this.notifySubscribers();
 		}
 	}
 
 	/**
 	 * Remove activity from current location
-	 * @param {string} activity - Activity name to remove
+	 * @param {string} activityName - Activity name to remove
 	 */
-	removeLocationActivity(activity) {
-		this.state.currentLocation.activities = this.state.currentLocation.activities.filter(a => a !== activity);
+	removeLocationActivity(activityName) {
+		this.state.currentLocation.activities = this.state.currentLocation.activities.filter(act => act.name !== activityName);
 		this.notifySubscribers();
 	}
 
@@ -242,7 +258,7 @@ export class GameViewModel {
 			existingItem.count += item.count || 1;
 		} else {
 			// Add new item
-			this.state.inventory.items.push({ ...item, id: Date.now() });
+			this.state.inventory.items.push({ ...item, uuid: '' });
 		}
 		this.notifySubscribers();
 	}
