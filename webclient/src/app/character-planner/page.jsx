@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import PlayerItems from '../../components/PlayerItems';
 import GameInfo from '../../components/GameInfo';
 import ActivityLog from '../../components/ActivityLog';
+import LocationInfo from '../../components/LocationInfo';
 import { GameViewModel } from '../../game/GameViewModel';
 
 export default function CharacterPlanner() {
@@ -85,10 +86,7 @@ export default function CharacterPlanner() {
       case 'stats':
         return (
           <div className="flex flex-col h-full">
-            <div className="flex-1 p-4 text-center text-gray-400">
-              <h2 className="text-lg font-bold mb-4">Location Overview</h2>
-              <p>Current location and world information will be displayed here.</p>
-            </div>
+            <LocationInfo gameViewModel={gameViewModel} />
             <ActivityLog gameViewModel={gameViewModel} />
           </div>
         );

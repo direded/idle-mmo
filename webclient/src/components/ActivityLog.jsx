@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 export default function ActivityLog({ gameViewModel, height = "h-32" }) {
   const [logs, setLogs] = useState([]);
   const [isResizing, setIsResizing] = useState(false);
-  const [currentHeight, setCurrentHeight] = useState(128); // Default 128px (h-32)
+  const [currentHeight, setCurrentHeight] = useState(256); // Default 128px (h-32)
   const resizeRef = useRef(null);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function ActivityLog({ gameViewModel, height = "h-32" }) {
   return (
     <div 
       ref={resizeRef}
-      className="flex-shrink-0 bg-gray-800"
+      className="flex-shrink-0 bg-gray-800 flex flex-col"
       style={{ height: `${currentHeight}px` }}
     >
       {/* Resize handle - positioned at top */}
@@ -97,11 +97,10 @@ export default function ActivityLog({ gameViewModel, height = "h-32" }) {
         </div>
       </div>
       <div className="flex-shrink-0 p-1">
-        <h2 className="text-xs font-bold text-orange-400 mb-1">Activity Log</h2>
+        <h2 className="text-sm font-bold text-white">Activity Log</h2>
       </div>
       <div 
-        className="overflow-y-auto p-1 scrollbar-a select-text"
-        style={{ height: `${contentHeight}px` }}
+        className="overflow-y-auto p-1 select-text flex-1"
       >
         <div className="text-xs text-gray-300">
           {displayLogs.map((log, index) => (

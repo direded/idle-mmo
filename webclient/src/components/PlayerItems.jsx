@@ -61,9 +61,9 @@ export default function PlayerItems() {
 		document.addEventListener('click', handlePanelClick);
 	}, []);
 
-	// Hide menu on click outside
+	// Hide menu on every!!! click
+	// TODO: Fix this
 	const handlePanelClick = (e) => {
-		console.log('clicked', menu);
 		setMenu((menu) => menu.show ? { show: false, x: 0, y: 0, item: null } : menu);
 	};
 
@@ -187,7 +187,7 @@ export default function PlayerItems() {
       className="flex-1 flex flex-col h-full min-h-0"
     >
       <div className="flex-shrink-0 p-1">
-        <h2 className="text-xs font-bold text-orange-400 mb-1">Inventory</h2>
+        <h2 className="text-sm font-bold text-white mb-1">Inventory</h2>
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-600">

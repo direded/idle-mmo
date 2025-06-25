@@ -34,8 +34,36 @@ export class GameViewModel {
 				potion: 0,
 				food: 0
 			},
-			currentLocation: '',
-			nearbyLocations: [],
+			currentLocation: {
+				name: 'Forest Clearing',
+				description: 'A peaceful clearing surrounded by tall trees. The air is fresh and you can hear birds chirping in the distance. This area is known for its abundant resources and wildlife.',
+				activities: [
+					'Gathering Wood',
+					'Hunting',
+					'Gathering Herbs',
+					'Fishing'
+				]
+			},
+			nearbyLocations: [
+				{
+					name: 'Dark Forest',
+					description: 'A dense forest with ancient trees. Home to dangerous creatures.',
+					distance: '0.5 km',
+					direction: 'NW'
+				},
+				{
+					name: 'Mountain Pass',
+					description: 'A narrow path through the mountains. Rich in minerals and ores.',
+					distance: '1.2 km',
+					direction: 'W'
+				},
+				{
+					name: 'Riverside Camp',
+					description: 'A peaceful camp by the river. Perfect for fishing and water activities.',
+					distance: '0.8 km',
+					direction: 'NE'
+				}
+			],
 			settings: {
 				soundVolume: 0,
 				musicVolume: 0,
@@ -59,6 +87,107 @@ export class GameViewModel {
 	// Notify all subscribers of state changes
 	notifySubscribers() {
 		this.subscribers.forEach(callback => callback(this.state));
+	}
+
+	// Location Management Methods (MVVM Architecture)
+	
+	/**
+	 * Set current location information
+	 * @param {Object} location - Location object with name, description, and activities
+	 */
+	setCurrentLocation(location) {
+		this.state.currentLocation = { ...location };
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update current location name
+	 * @param {string} name - New location name
+	 */
+	setLocationName(name) {
+		this.state.currentLocation.name = name;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update current location description
+	 * @param {string} description - New location description
+	 */
+	setLocationDescription(description) {
+		this.state.currentLocation.description = description;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Set available activities for current location
+	 * @param {Array} activities - Array of activity names
+	 */
+	setLocationActivities(activities) {
+		this.state.currentLocation.activities = [...activities];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Add activity to current location
+	 * @param {string} activity - Activity name to add
+	 */
+	addLocationActivity(activity) {
+		if (!this.state.currentLocation.activities.includes(activity)) {
+			this.state.currentLocation.activities.push(activity);
+			this.notifySubscribers();
+		}
+	}
+
+	/**
+	 * Remove activity from current location
+	 * @param {string} activity - Activity name to remove
+	 */
+	removeLocationActivity(activity) {
+		this.state.currentLocation.activities = this.state.currentLocation.activities.filter(a => a !== activity);
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Set nearby locations
+	 * @param {Array} locations - Array of location objects
+	 */
+	setNearbyLocations(locations) {
+		this.state.nearbyLocations = [...locations];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Add nearby location
+	 * @param {Object} location - Location object with name, description, distance, direction
+	 */
+	addNearbyLocation(location) {
+		this.state.nearbyLocations.push(location);
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Remove nearby location by name
+	 * @param {string} locationName - Name of location to remove
+	 */
+	removeNearbyLocation(locationName) {
+		this.state.nearbyLocations = this.state.nearbyLocations.filter(loc => loc.name !== locationName);
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Get current location information
+	 * @returns {Object} Current location object
+	 */
+	getCurrentLocation() {
+		return this.state.currentLocation;
+	}
+
+	/**
+	 * Get nearby locations
+	 * @returns {Array} Array of nearby location objects
+	 */
+	getNearbyLocations() {
+		return this.state.nearbyLocations;
 	}
 
 	// Log Management Methods (MVVM Architecture)
@@ -94,7 +223,7 @@ export class GameViewModel {
 		
 		const newLogs = messages.map(message => ({
 			type,
-			content: `${timestamp} ${message}`,
+			content: `[${timestamp}] ${message}`,
 			timestamp
 		}));
 		
