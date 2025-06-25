@@ -123,7 +123,7 @@ export default function CharacterPlanner() {
         <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
           {/* Game Info */}
           <div className="p-1 border-b border-gray-700">
-            <GameInfo />
+            <GameInfo gameViewModel={gameViewModel} />
           </div>
 
           {/* View Buttons */}

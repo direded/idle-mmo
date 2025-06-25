@@ -83,6 +83,18 @@ export class GameViewModel {
 			},
 			process: {
 				type: "null"
+			},
+			time: {
+				day: 'Monday',
+				date: '14.05.203',
+				time: '13:48',
+				formatted: '14.05.203 13:48'
+			},
+			weather: {
+				condition: 'Sunny',
+				temperature: 22,
+				humidity: 65,
+				windSpeed: 5
 			}
 		};
 
@@ -322,6 +334,160 @@ export class GameViewModel {
 	 */
 	getInventoryItemCount() {
 		return this.state.inventory.items.length;
+	}
+
+	// Time Management Methods (MVVM Architecture)
+	
+	/**
+	 * Get current time information
+	 * @returns {Object} Time object with day, date, time, and formatted properties
+	 */
+	getTime() {
+		return this.state.time;
+	}
+
+	/**
+	 * Set time information
+	 * @param {Object} time - Time object with day, date, time properties
+	 */
+	setTime(time) {
+		this.state.time = { 
+			...time, 
+			formatted: `${time.date} ${time.time}` 
+		};
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update time
+	 * @param {string} time - Time string (HH:MM format)
+	 */
+	setTimeOnly(time) {
+		this.state.time.time = time;
+		this.state.time.formatted = `${this.state.time.date} ${time}`;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update date
+	 * @param {string} date - Date string (DD.MM.YYY format)
+	 */
+	setDateOnly(date) {
+		this.state.time.date = date;
+		this.state.time.formatted = `${date} ${this.state.time.time}`;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update day of week
+	 * @param {string} day - Day name
+	 */
+	setDayOnly(day) {
+		this.state.time.day = day;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Advance time by minutes
+	 * @param {number} minutes - Minutes to advance
+	 */
+	advanceTime(minutes) {
+		const [hours, mins] = this.state.time.time.split(':').map(Number);
+		let totalMinutes = hours * 60 + mins + minutes;
+		
+		// Handle day overflow (24 hours = 1440 minutes)
+		while (totalMinutes >= 1440) {
+			totalMinutes -= 1440;
+			this.advanceDay();
+		}
+		
+		const newHours = Math.floor(totalMinutes / 60);
+		const newMins = totalMinutes % 60;
+		const newTime = `${newHours.toString().padStart(2, '0')}:${newMins.toString().padStart(2, '0')}`;
+		
+		this.setTimeOnly(newTime);
+	}
+
+	/**
+	 * Advance to next day
+	 */
+	advanceDay() {
+		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+		const currentDayIndex = days.indexOf(this.state.time.day);
+		const nextDayIndex = (currentDayIndex + 1) % 7;
+		this.setDayOnly(days[nextDayIndex]);
+	}
+
+	// Weather Management Methods (MVVM Architecture)
+	
+	/**
+	 * Get current weather information
+	 * @returns {Object} Weather object with condition, temperature, humidity, windSpeed
+	 */
+	getWeather() {
+		return this.state.weather;
+	}
+
+	/**
+	 * Set weather information
+	 * @param {Object} weather - Weather object with condition, temperature, humidity, windSpeed
+	 */
+	setWeather(weather) {
+		this.state.weather = { ...weather };
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update weather condition
+	 * @param {string} condition - Weather condition (e.g., 'Sunny', 'Rainy', 'Cloudy')
+	 */
+	setWeatherCondition(condition) {
+		this.state.weather.condition = condition;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update temperature
+	 * @param {number} temperature - Temperature in Celsius
+	 */
+	setTemperature(temperature) {
+		this.state.weather.temperature = temperature;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update humidity
+	 * @param {number} humidity - Humidity percentage
+	 */
+	setHumidity(humidity) {
+		this.state.weather.humidity = humidity;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update wind speed
+	 * @param {number} windSpeed - Wind speed in km/h
+	 */
+	setWindSpeed(windSpeed) {
+		this.state.weather.windSpeed = windSpeed;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Get weather condition icon/emoji
+	 * @returns {string} Weather condition representation
+	 */
+	getWeatherIcon() {
+		const weatherIcons = {
+			'Sunny': '☀️',
+			'Cloudy': '☁️',
+			'Rainy': '🌧️',
+			'Stormy': '⛈️',
+			'Snowy': '❄️',
+			'Foggy': '🌫️',
+			'Windy': '💨'
+		};
+		return weatherIcons[this.state.weather.condition] || '🌤️';
 	}
 
 	// Log Management Methods (MVVM Architecture)

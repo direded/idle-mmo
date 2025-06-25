@@ -2,69 +2,41 @@
 
 import { useState, useEffect } from 'react';
 
-export default function GameInfo() {
-  const [gameTime, setGameTime] = useState({
-    hour: 12,
-    minute: 0,
-    day: 1,
-    season: 'Spring'
+export default function GameInfo({ gameViewModel }) {
+  const [time, setTime] = useState({
+    day: 'Monday',
+    date: '14.05.203',
+    time: '13:48',
+    formatted: '14.05.203 13:48'
   });
-
   const [weather, setWeather] = useState({
-    condition: 'Clear',
+    condition: 'Sunny',
     temperature: 22,
-    humidity: 65
+    humidity: 65,
+    windSpeed: 5
   });
 
-  // Simulate time passing
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGameTime(prev => {
-        let newMinute = prev.minute + 1;
-        let newHour = prev.hour;
-        let newDay = prev.day;
-        let newSeason = prev.season;
-
-        if (newMinute >= 60) {
-          newMinute = 0;
-          newHour++;
-        }
-
-        if (newHour >= 24) {
-          newHour = 0;
-          newDay++;
-        }
-
-        if (newDay > 90) {
-          newDay = 1;
-          const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
-          const currentSeasonIndex = seasons.indexOf(newSeason);
-          newSeason = seasons[(currentSeasonIndex + 1) % 4];
-        }
-
-        return { hour: newHour, minute: newMinute, day: newDay, season: newSeason };
+    if (gameViewModel) {
+      // Subscribe to state changes
+      const unsubscribe = gameViewModel.subscribe((state) => {
+        setTime(state.time);
+        setWeather(state.weather);
       });
-    }, 1000); // 1 second = 1 minute in game
 
-    return () => clearInterval(interval);
-  }, []);
+      // Initialize with current data
+      setTime(gameViewModel.getTime());
+      setWeather(gameViewModel.getWeather());
 
-  const formatTime = (hour, minute) => {
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
-  };
-
-  const getWeatherIcon = (condition) => {
-    switch (condition.toLowerCase()) {
-      case 'clear': return '☀️';
-      case 'cloudy': return '☁️';
-      case 'rain': return '🌧️';
-      case 'storm': return '⛈️';
-      case 'snow': return '❄️';
-      case 'fog': return '🌫️';
-      default: return '🌤️';
+      return unsubscribe;
     }
+  }, [gameViewModel]);
+
+  const formatTime = (timeString) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHour = hours % 12 || 12;
+    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
   };
 
   return (
@@ -73,7 +45,7 @@ export default function GameInfo() {
       <div className="flex items-center space-x-1">
         <span className="text-[10px] text-gray-400">Time:</span>
         <span className="text-[10px] text-white font-semibold">
-          {formatTime(gameTime.hour, gameTime.minute)}
+          {formatTime(time.time)}
         </span>
       </div>
 
@@ -81,14 +53,14 @@ export default function GameInfo() {
       <div className="flex items-center space-x-1">
         <span className="text-[10px] text-gray-400">Day:</span>
         <span className="text-[10px] text-white font-semibold">
-          {gameTime.day}
+          {time.day}
         </span>
       </div>
 
       {/* Weather */}
       <div className="flex items-center space-x-1">
         <span className="text-[12px]">
-          {getWeatherIcon(weather.condition)}
+          {gameViewModel?.getWeatherIcon()}
         </span>
         <span className="text-[10px] text-white font-semibold">
           {weather.condition}
