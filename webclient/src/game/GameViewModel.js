@@ -32,7 +32,19 @@ export class GameViewModel {
 			inventory: {
 				gold: 0,
 				potion: 0,
-				food: 0
+				food: 0,
+				items: [
+					{ id: 1, name: 'Iron Sword', icon: '/assets/items/sword.png', count: 1, weight: 2.5, rarity: 'normal' },
+					{ id: 2, name: 'Steel Dagger', icon: '/assets/items/sword.png', count: 1, weight: 1.2, rarity: 'magic' },
+					{ id: 3, name: 'Leather Armor', icon: '/assets/items/leather.png', count: 1, weight: 3.0, rarity: 'normal' },
+					{ id: 4, name: 'Chain Mail', icon: '/assets/items/leather.png', count: 1, weight: 4.5, rarity: 'rare' },
+					{ id: 5, name: 'Health Potion', icon: '/assets/items/potion.png', count: 15, weight: 0.5, rarity: 'normal' },
+					{ id: 6, name: 'Mana Potion', icon: '/assets/items/potion.png', count: 8, weight: 0.5, rarity: 'normal' },
+					{ id: 7, name: 'Greater Healing Potion', icon: '/assets/items/potion.png', count: 3, weight: 0.8, rarity: 'magic' },
+					{ id: 8, name: 'Leather Scraps', icon: '/assets/items/leather.png', count: 25, weight: 0.1, rarity: 'normal' },
+					{ id: 9, name: 'Iron Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'normal' },
+					{ id: 10, name: 'Steel Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'rare' }
+				]
 			},
 			currentLocation: {
 				name: 'Forest Clearing',
@@ -188,6 +200,128 @@ export class GameViewModel {
 	 */
 	getNearbyLocations() {
 		return this.state.nearbyLocations;
+	}
+
+	// Inventory Management Methods (MVVM Architecture)
+	
+	/**
+	 * Get all inventory items
+	 * @returns {Array} Array of inventory items
+	 */
+	getInventoryItems() {
+		return this.state.inventory.items;
+	}
+
+	/**
+	 * Set all inventory items
+	 * @param {Array} items - Array of item objects
+	 */
+	setInventoryItems(items) {
+		this.state.inventory.items = [...items];
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Add item to inventory
+	 * @param {Object} item - Item object to add
+	 */
+	addInventoryItem(item) {
+		// Check if item already exists
+		const existingItem = this.state.inventory.items.find(i => i.name === item.name);
+		if (existingItem) {
+			// Update count if item exists
+			existingItem.count += item.count || 1;
+		} else {
+			// Add new item
+			this.state.inventory.items.push({ ...item, id: Date.now() });
+		}
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Remove item from inventory by ID
+	 * @param {number} itemId - ID of item to remove
+	 */
+	removeInventoryItem(itemId) {
+		this.state.inventory.items = this.state.inventory.items.filter(item => item.id !== itemId);
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Update item count in inventory
+	 * @param {number} itemId - ID of item to update
+	 * @param {number} newCount - New count value
+	 */
+	updateItemCount(itemId, newCount) {
+		const item = this.state.inventory.items.find(i => i.id === itemId);
+		if (item) {
+			item.count = newCount;
+			if (newCount <= 0) {
+				this.removeInventoryItem(itemId);
+			} else {
+				this.notifySubscribers();
+			}
+		}
+	}
+
+	/**
+	 * Get inventory item by ID
+	 * @param {number} itemId - ID of item to get
+	 * @returns {Object|null} Item object or null if not found
+	 */
+	getInventoryItem(itemId) {
+		return this.state.inventory.items.find(item => item.id === itemId) || null;
+	}
+
+	/**
+	 * Get inventory item by name
+	 * @param {string} itemName - Name of item to get
+	 * @returns {Object|null} Item object or null if not found
+	 */
+	getInventoryItemByName(itemName) {
+		return this.state.inventory.items.find(item => item.name === itemName) || null;
+	}
+
+	/**
+	 * Update inventory gold
+	 * @param {number} amount - New gold amount
+	 */
+	setInventoryGold(amount) {
+		this.state.inventory.gold = amount;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Add gold to inventory
+	 * @param {number} amount - Amount to add
+	 */
+	addInventoryGold(amount) {
+		this.state.inventory.gold += amount;
+		this.notifySubscribers();
+	}
+
+	/**
+	 * Get inventory gold
+	 * @returns {number} Current gold amount
+	 */
+	getInventoryGold() {
+		return this.state.inventory.gold;
+	}
+
+	/**
+	 * Get total inventory weight
+	 * @returns {number} Total weight of all items
+	 */
+	getInventoryWeight() {
+		return this.state.inventory.items.reduce((total, item) => total + (item.weight * item.count), 0);
+	}
+
+	/**
+	 * Get inventory item count
+	 * @returns {number} Total number of unique items
+	 */
+	getInventoryItemCount() {
+		return this.state.inventory.items.length;
 	}
 
 	// Log Management Methods (MVVM Architecture)

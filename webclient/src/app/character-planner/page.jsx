@@ -160,7 +160,7 @@ export default function CharacterPlanner() {
             </div>
           </div>
 
-          <PlayerItems />
+          <PlayerItems gameViewModel={gameViewModel} />
         </div>
 
         {/* Main Canvas */}

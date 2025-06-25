@@ -2,70 +2,34 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function PlayerItems() {
+export default function PlayerItems({ gameViewModel }) {
   const [menu, setMenu] = useState({ show: false, x: 0, y: 0, item: null });
+  const [playerItems, setPlayerItems] = useState([]);
   const rowRefs = useRef({});
 
-  // Sample player items data as a plain list
-  const playerItems = [
-    { id: 1, name: 'Iron Sword', icon: '/assets/items/sword.png', count: 1, weight: 2.5, rarity: 'normal' },
-    { id: 2, name: 'Steel Dagger', icon: '/assets/items/sword.png', count: 1, weight: 1.2, rarity: 'magic' },
-    { id: 3, name: 'Leather Armor', icon: '/assets/items/leather.png', count: 1, weight: 3.0, rarity: 'normal' },
-    { id: 4, name: 'Chain Mail', icon: '/assets/items/leather.png', count: 1, weight: 4.5, rarity: 'rare' },
-    { id: 5, name: 'Health Potion', icon: '/assets/items/potion.png', count: 15, weight: 0.5, rarity: 'normal' },
-    { id: 6, name: 'Mana Potion', icon: '/assets/items/potion.png', count: 8, weight: 0.5, rarity: 'normal' },
-    { id: 7, name: 'Greater Healing Potion', icon: '/assets/items/potion.png', count: 3, weight: 0.8, rarity: 'magic' },
-    { id: 8, name: 'Leather Scraps', icon: '/assets/items/leather.png', count: 25, weight: 0.1, rarity: 'normal' },
-    { id: 9, name: 'Iron Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'normal' },
-    { id: 10, name: 'Steel Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'rare' },
-    { id: 11, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 12, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 13, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 14, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 15, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 16, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 17, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 18, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 19, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 20, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 21, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 22, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 23, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 24, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 25, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 26, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 27, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 28, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 29, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 30, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 31, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 32, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 33, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 34, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 35, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 36, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 37, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 38, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 39, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-    { id: 40, name: 'Void Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'unique' },
-  ];
+  useEffect(() => {
+    if (gameViewModel) {
+      // Subscribe to state changes
+      const unsubscribe = gameViewModel.subscribe((state) => {
+        setPlayerItems(state.inventory.items);
+      });
 
-  const rarityColors = {
-    normal: 'text-gray-300',
-    magic: 'text-blue-400',
-    rare: 'text-yellow-400',
-    unique: 'text-orange-400'
+      // Initialize with current data
+      setPlayerItems(gameViewModel.getInventoryItems());
+
+      return unsubscribe;
+    }
+  }, [gameViewModel]);
+
+  useEffect(() => {
+    document.addEventListener('click', handlePanelClick);
+  }, []);
+
+  // Hide menu on click outside
+  const handlePanelClick = (e) => {
+    console.log('clicked', menu);
+    setMenu((menu) => menu.show ? { show: false, x: 0, y: 0, item: null } : menu);
   };
-
-	useEffect(() => {
-		document.addEventListener('click', handlePanelClick);
-	}, []);
-
-	// Hide menu on every!!! click
-	// TODO: Fix this
-	const handlePanelClick = (e) => {
-		setMenu((menu) => menu.show ? { show: false, x: 0, y: 0, item: null } : menu);
-	};
 
   const handleRowClick = (e, item) => {
     e.preventDefault();
@@ -73,14 +37,47 @@ export default function PlayerItems() {
   };
 
   const handleMenuAction = (action) => {
-    if (menu.item) {
+    if (menu.item && gameViewModel) {
       console.log(`${action} action for item:`, menu.item.name);
+      
+      // Log the action
+      gameViewModel.addLog(`${action} ${menu.item.name}`, 'inventory');
+      
+      // Handle different actions
+      switch (action) {
+        case 'use':
+          if (menu.item.name.toLowerCase().includes('potion')) {
+            gameViewModel.updateItemCount(menu.item.id, menu.item.count - 1);
+            gameViewModel.addLog(`Used ${menu.item.name}`, 'action');
+          }
+          break;
+        case 'equip':
+          gameViewModel.addLog(`Equipped ${menu.item.name}`, 'equipment');
+          break;
+        case 'drop':
+          gameViewModel.updateItemCount(menu.item.id, menu.item.count - 1);
+          gameViewModel.addLog(`Dropped ${menu.item.name}`, 'action');
+          break;
+        case 'drop-all':
+          gameViewModel.removeInventoryItem(menu.item.id);
+          gameViewModel.addLog(`Dropped all ${menu.item.name}`, 'action');
+          break;
+        default:
+          break;
+      }
     }
     setMenu({ show: false, x: 0, y: 0, item: null });
   };
 
   const closeMenu = () => {
     setMenu({ show: false, x: 0, y: 0, item: null });
+  };
+
+  const rarityColors = {
+    normal: 'text-gray-300',
+    magic: 'text-blue-400',
+    rare: 'text-yellow-400',
+    unique: 'text-orange-400'
   };
 
   const ItemRow = ({ item }) => (
@@ -102,10 +99,10 @@ export default function PlayerItems() {
         </div>
       </td>
       <td className="py-0.5 px-1 text-right">
-        <span className="text-gray-400 text-xxs">{item.weight}kg</span>
+        <span className="text-gray-400 text-[10px]">{item.weight}kg</span>
       </td>
       <td className="py-0.5 px-1 text-right">
-        <span className="text-gray-400 text-xxs">{item.count}</span>
+        <span className="text-gray-400 text-[10px]">{item.count}</span>
       </td>
     </tr>
   );
@@ -134,9 +131,9 @@ export default function PlayerItems() {
 						<h4 className={`font-bold text-xs ${rarityColors[item.rarity]}`}>{item.name}</h4>
 					</div>
 					<div className="space-y-0.5">
-						<div className="text-gray-300 text-[10px]">Count: {item.count}</div>
-						<div className="text-gray-300 text-[10px]">Weight: {item.weight}kg</div>
-						<div className="text-gray-400 text-[9px] capitalize">Rarity: {item.rarity}</div>
+						<div className="text-gray-300 text-xs">Count: {item.count}</div>
+						<div className="text-gray-300 text-xs">Weight: {item.weight}kg</div>
+						<div className="text-gray-400 text-xs capitalize">Rarity: {item.rarity}</div>
 					</div>
 				</div>
 				{/* Right: Actions */}
@@ -144,7 +141,7 @@ export default function PlayerItems() {
 					{isConsumable && (
 						<button
 							onClick={() => handleMenuAction('use')}
-							className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+							className="w-full px-1 py-1 text-left text-xs text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
 						>
 							Use
 						</button>
@@ -152,27 +149,27 @@ export default function PlayerItems() {
 					{isEquipment && (
 						<button
 							onClick={() => handleMenuAction('equip')}
-							className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+							className="w-full px-1 py-1 text-left text-xs text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
 						>
 							Equip
 						</button>
 					)}
 					<button
 						onClick={() => handleMenuAction('examine')}
-						className="w-full px-1 py-1 text-left text-[10px] text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
+						className="w-full px-1 py-1 text-left text-xs text-gray-300 hover:bg-gray-600 hover:cursor-pointer"
 					>
 						Examine
 					</button>
 					<button
 						onClick={() => handleMenuAction('drop')}
-						className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600 hover:cursor-pointer"
+						className="w-full px-1 py-1 text-left text-xs text-red-400 hover:bg-gray-600 hover:cursor-pointer"
 					>
 						Drop
 					</button>
 					{item.count > 1 && (
 						<button
 							onClick={() => handleMenuAction('drop-all')}
-							className="w-full px-1 py-1 text-left text-[10px] text-red-400 hover:bg-gray-600 hover:cursor-pointer"
+							className="w-full px-1 py-1 text-left text-xs text-red-400 hover:bg-gray-600 hover:cursor-pointer"
 						>
 							Drop All
 						</button>
