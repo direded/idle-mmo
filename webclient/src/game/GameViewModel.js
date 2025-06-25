@@ -9,9 +9,6 @@ export class GameViewModel {
 			showSettingsModal: false,
 			windowModals: [
 				{ type: 'test' },
-				{ type: 'test' },
-				{ type: 'test' },
-				{ type: 'test' },
 			],
 			message: '',
 			logs: [],
@@ -647,6 +644,16 @@ export class GameViewModel {
 
 	changeLocation(location) {
 		this.state.currentLocation = location;
+		this.notifySubscribers();
+	}
+
+	removeWindowModal(id) {
+		this.state.windowModals = [];
+		this.notifySubscribers();
+	}
+
+	setWindowModal(modal) {
+		this.state.windowModals = [modal];
 		this.notifySubscribers();
 	}
 } 

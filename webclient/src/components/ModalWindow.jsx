@@ -25,6 +25,12 @@ export default class ModalWindow extends Component {
 		}
 	}
 
+	onClose(t) {
+		console.log('onClose', t.props.gameViewModel.state.windowModals)
+		t.props.gameViewModel.removeWindowModal()
+		console.log('onClose', t.props.gameViewModel.state.windowModals)
+	}
+
 	componentDidMount() {
 		const handleMouseUp = () => {
 			this.setState({ isDragging: false })
@@ -86,7 +92,7 @@ export default class ModalWindow extends Component {
 						<div className="flex-grow" />
 						<button
 							className="text-gray-400 hover:text-white transition-colors text-2xl font-light px-2 hover:bg-gray-600 h-full flex items-center"
-							onClick={onClose}
+							onClick={() => this.onClose(this)}
 						>
 							×
 						</button>

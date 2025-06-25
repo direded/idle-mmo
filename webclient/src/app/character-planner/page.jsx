@@ -1,14 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import PlayerItems from '../../components/PlayerItems';
 import GameInfo from '../../components/GameInfo';
 import ActivityLog from '../../components/ActivityLog';
 import LocationInfo from '../../components/LocationInfo';
 import { GameViewModel } from '../../game/GameViewModel';
+import TestWindow from '@/components/TestWindow';
 
 export default function CharacterPlanner() {
 	const [gameViewModel] = useState(() => new GameViewModel());
+	const [state, setState] = useState(gameViewModel.state);
+	
+	useEffect(() => {
+		const unsubscribe = gameViewModel.subscribe((newState) => {
+			setState(prevState => ({
+				...newState
+			}))
+		});
+		return () => unsubscribe();
+	}, []);
 
 	useEffect(() => {
 		document.addEventListener('contextmenu', event => event.preventDefault());
@@ -30,56 +41,8 @@ export default function CharacterPlanner() {
 	}, [gameViewModel]);
 
 
-  const [characterData, setCharacterData] = useState({
-    name: 'Exile',
-    level: 1,
-    class: 'Marauder',
-    experience: 0,
-    stats: {
-      strength: 20,
-      dexterity: 14,
-      intelligence: 14,
-      life: 50,
-      mana: 40,
-      energyShield: 0,
-      armor: 0,
-      evasion: 0,
-      block: 0,
-      dodge: 0,
-      spellDodge: 0,
-      attackSpeed: 1.2,
-      castSpeed: 1.0,
-      movementSpeed: 1.0,
-      critChance: 5,
-      critMultiplier: 150,
-      accuracy: 100,
-      damage: {
-        physical: 10,
-        fire: 0,
-        cold: 0,
-        lightning: 0,
-        chaos: 0
-      },
-      resistances: {
-        fire: 0,
-        cold: 0,
-        lightning: 0,
-        chaos: 0
-      }
-    }
-  });
-
   const [activeView, setActiveView] = useState('stats');
 
-  const updateStat = (statName, value) => {
-    setCharacterData(prev => ({
-      ...prev,
-      stats: {
-        ...prev.stats,
-        [statName]: value
-      }
-    }));
-  };
 
   const renderMainContent = () => {
     switch (activeView) {
@@ -168,6 +131,15 @@ export default function CharacterPlanner() {
           {renderMainContent()}
         </div>
       </div>
+			{/* Modals */}
+			{gameViewModel.state.windowModals.map((modal, index) => {
+					var result
+					if (modal.type == 'test') {
+						result = createElement(TestWindow, { key: index, gameViewModel: gameViewModel, ...modal });
+					}
+					return result
+						
+				})}
     </div>
   );
 } 
