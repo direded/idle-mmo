@@ -27,7 +27,6 @@ export default function PlayerItems({ gameViewModel }) {
 
   // Hide menu on click outside
   const handlePanelClick = (e) => {
-    console.log('clicked', menu);
     setMenu((menu) => menu.show ? { show: false, x: 0, y: 0, item: null } : menu);
   };
 
