@@ -64,7 +64,7 @@ export default class ModalWindow extends Component {
 
 	render() {
 		const {
-			title = this.title !== undefined ? this.title : 'Modal Window',
+			title = 'Modal Window',
 			children,
 			onClose,
 			className = ''
@@ -77,33 +77,40 @@ export default class ModalWindow extends Component {
 		// }, [this.state.isDragging, this.state.dragOffset])
 
 		return (
-			<div
-				className="fixed z-50"
-				style={{
-					left: `${this.state.position.x}px`,
-					top: `${this.state.position.y}px`
-				}}
-			>
-				<div className="bg-gray-800 overflow-hidden w-[500px] border border-gray-500 rounded-lg">
-					{/* Title Bar */}
-					<div
-						className="h-5 bg-gray-800 flex items-center pl-4 cursor-move select-none rounded-t-lg"
-						onMouseDown={this.handleMouseDown}
-					>
-						<div className="text-white text-[10px] font-medium">{title}</div>
-						<div className="flex-grow" />
-						<button
-							className="text-gray-400 hover:text-white transition-colors text-xl font-light px-2 hover:bg-gray-700 h-full flex items-center rounded-tr-lg"
-							onClick={() => this.onClose(this)}
+			<>
+				{/* Black backdrop */}
+				<div className="fixed inset-0 bg-black/25 z-40" />
+				
+				<div
+					className="fixed z-50"
+					style={{
+						left: `${this.state.position.x}px`,
+						top: `${this.state.position.y}px`
+					}}
+				>
+					<div className="bg-gray-800 overflow-hidden w-[500px] border border-gray-500 rounded-lg">
+						{/* Title Bar */}
+						<div
+							className="h-5 bg-gray-800 flex items-center pl-4 cursor-move select-none rounded-t-lg"
+							onMouseDown={this.handleMouseDown}
 						>
-							×
-						</button>
-					</div>
+							<div className="text-white text-[10px] font-medium">{title}</div>
+							<div className="flex-grow" />
+							<button
+								className="text-gray-400 hover:text-white transition-colors text-xl font-light px-2 hover:bg-gray-700 h-full flex items-center rounded-tr-lg"
+								onClick={() => this.onClose(this)}
+							>
+								×
+							</button>
+						</div>
 
-					{/* Content */}
-					{children || this.renderContent()}
+						{/* Content */}
+						<div className="p-4">
+							{children || this.renderContent()}
+						</div>
+					</div>
 				</div>
-			</div>
+			</>
 		)
 	}
 
