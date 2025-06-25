@@ -64,11 +64,13 @@ export default class ModalWindow extends Component {
 
 	render() {
 		const {
-			title = 'Modal Window',
+			title = this.title !== undefined ? this.title : 'Modal Window',
 			children,
 			onClose,
 			className = ''
 		} = this.props
+
+		console.log('modal window', this.props)
 
 		// useEffect(() => {
 			
@@ -82,16 +84,16 @@ export default class ModalWindow extends Component {
 					top: `${this.state.position.y}px`
 				}}
 			>
-				<div className="bg-gray-800 overflow-hidden w-[500px] shadow-[0_0_8px_rgba(0,0,0,0.4)]">
+				<div className="bg-gray-800 overflow-hidden w-[500px] border border-gray-500 rounded-lg">
 					{/* Title Bar */}
 					<div
-						className="h-7 bg-gray-700 flex items-center pl-4 cursor-move select-none"
+						className="h-5 bg-gray-800 flex items-center pl-4 cursor-move select-none rounded-t-lg"
 						onMouseDown={this.handleMouseDown}
 					>
-						<div className="text-white text-sm font-medium">{title}</div>
+						<div className="text-white text-[10px] font-medium">{title}</div>
 						<div className="flex-grow" />
 						<button
-							className="text-gray-400 hover:text-white transition-colors text-2xl font-light px-2 hover:bg-gray-600 h-full flex items-center"
+							className="text-gray-400 hover:text-white transition-colors text-xl font-light px-2 hover:bg-gray-700 h-full flex items-center rounded-tr-lg"
 							onClick={() => this.onClose(this)}
 						>
 							×
@@ -99,9 +101,7 @@ export default class ModalWindow extends Component {
 					</div>
 
 					{/* Content */}
-					<div className="p-4">
-						{children || this.renderContent()}
-					</div>
+					{children || this.renderContent()}
 				</div>
 			</div>
 		)

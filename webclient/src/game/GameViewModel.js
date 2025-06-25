@@ -652,6 +652,11 @@ export class GameViewModel {
 		this.notifySubscribers();
 	}
 
+	addWindowModal(modal) {
+		this.state.windowModals = [modal];
+		this.notifySubscribers();
+	}
+
 	setWindowModal(modal) {
 		this.state.windowModals = [modal];
 		this.notifySubscribers();

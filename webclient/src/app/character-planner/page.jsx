@@ -7,6 +7,7 @@ import ActivityLog from '../../components/ActivityLog';
 import LocationInfo from '../../components/LocationInfo';
 import { GameViewModel } from '../../game/GameViewModel';
 import TestWindow from '@/components/TestWindow';
+import ItemStackWindow from '@/components/ItemStackWindow';
 
 export default function CharacterPlanner() {
 	const [gameViewModel] = useState(() => new GameViewModel());
@@ -136,6 +137,8 @@ export default function CharacterPlanner() {
 					var result
 					if (modal.type == 'test') {
 						result = createElement(TestWindow, { key: index, gameViewModel: gameViewModel, ...modal });
+					} else if (modal.type == 'itemStack') {
+						result = createElement(ItemStackWindow, { key: index, gameViewModel: gameViewModel, ...modal });
 					}
 					return result
 						
