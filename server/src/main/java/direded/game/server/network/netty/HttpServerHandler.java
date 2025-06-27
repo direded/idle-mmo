@@ -6,19 +6,22 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
+	public static final Logger logger = LoggerFactory.getLogger(InitialWebSocketHandler.class);
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		if (msg instanceof HttpRequest httpRequest) {
 
-			System.out.println("Http Request Received");
+			logger.debug("Http Request Received");
 
 			HttpHeaders headers = httpRequest.headers();
-			System.out.println("Connection : " +headers.get("Connection"));
-			System.out.println("Upgrade : " + headers.get("Upgrade"));
+			logger.debug("Connection : " +headers.get("Connection"));
+			logger.debug("Upgrade : " + headers.get("Upgrade"));
 
 			if ("Upgrade".equalsIgnoreCase(headers.get(HttpHeaderNames.CONNECTION)) &&
 					"WebSocket".equalsIgnoreCase(headers.get(HttpHeaderNames.UPGRADE))) {
@@ -26,15 +29,15 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 				//Adding new handler to the existing pipeline to handle WebSocket Messages
 				ctx.pipeline().replace(this, "initialWebsocketHandler", new InitialWebSocketHandler());
 
-				System.out.println("WebSocketHandler added to the pipeline");
-				System.out.println("Opened Channel : " + ctx.channel());
-				System.out.println("Handshaking....");
+				logger.debug("WebSocketHandler added to the pipeline");
+				logger.debug("Opened Channel : " + ctx.channel());
+				logger.debug("Handshaking....");
 				//Do the Handshake to upgrade connection from HTTP to WebSocket protocol
 				handleHandshake(ctx, httpRequest);
-				System.out.println("Handshake is done");
+				logger.debug("Handshake is done");
 			}
 		} else {
-			System.out.println("Incoming request is unknown");
+			logger.debug("Incoming request is unknown");
 		}
 	}
 
@@ -51,9 +54,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	protected String getWebSocketURL(HttpRequest req) {
-		System.out.println("Req URI : " + req.getUri());
+		logger.debug("Req URI : " + req.getUri());
 		String url =  "ws://" + req.headers().get("Host") + req.getUri() ;
-		System.out.println("Constructed URL : " + url);
+		logger.debug("Constructed URL : " + url);
 		return url;
 	}
 }

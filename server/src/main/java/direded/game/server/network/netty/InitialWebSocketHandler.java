@@ -2,14 +2,19 @@ package direded.game.server.network.netty;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import direded.game.server.game.GameUtils;
 import direded.game.server.network.NetworkController;
 import direded.game.server.network.clientpacket.TokenResponseCp;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
+
+	public static final Logger logger = LoggerFactory.getLogger(InitialWebSocketHandler.class);
 
 	Gson gson = new Gson();
 
@@ -17,13 +22,13 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
 		if (msg instanceof TextWebSocketFrame) {
-			System.out.println("Registering client..");
+			logger.debug("Registering client..");
 			var jsonString = ((TextWebSocketFrame) msg).text();
 			JsonObject json;
 			try {
 				json = gson.fromJson(jsonString, JsonObject.class);
-			} catch(Exception ignored) {
-				System.out.println("Exception: " + ignored);
+			} catch(Exception exception) {
+				logger.error("Wrong json incoming", exception);
 				abortConnection(ctx.channel());
 				return;
 			}
@@ -34,7 +39,6 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 			var token = json.get("token").getAsString();
 			var client = NetworkController.instance.registerClient(ctx.channel(), token);
 			if (client != null) {
-				System.out.println("Client registered!");
 				var packet = new TokenResponseCp(client.getModel(), true);
 				var jsonRedirect = json.get("redirect");
 				if (jsonRedirect.isJsonPrimitive() && jsonRedirect.getAsJsonPrimitive().isString()) {
