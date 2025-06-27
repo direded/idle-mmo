@@ -7,7 +7,6 @@ import direded.game.server.network.PacketType;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @RequiredArgsConstructor
@@ -16,12 +15,16 @@ public abstract class ClientPacket {
 	protected final PacketType packetType;
 
 	public void send(UserClient user) {
-		NetworkController.instance.send(user, this);
+		NetworkController.instance.sendPacket(user, this);
 	}
 
 	public void send(Channel channel) {
-		NetworkController.instance.send(channel, this);
+		NetworkController.instance.sendPacket(channel, this);
 	}
 
 	public abstract JsonObject serialize();
+
+	public Integer getPacketResponseId() {
+		return null;
+	}
 }

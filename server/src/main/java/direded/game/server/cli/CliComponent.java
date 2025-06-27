@@ -49,7 +49,7 @@ public class CliComponent {
 				if (in.startsWith("move ")) {
 					DemoComponent.instance.targetTile = in.substring(5);
 				}
-				Thread.sleep(350);
+				Thread.sleep(1000);
 			}
 		} catch (IOException | InterruptedException ignored) {
 

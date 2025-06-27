@@ -8,7 +8,7 @@ public class CommonSp extends ServerPacket {
 	JsonObject json;
 
 	@Override
-	protected void process() {
+	public void process() {
 
 	}
 

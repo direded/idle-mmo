@@ -10,7 +10,7 @@ public abstract class ServerPacket {
 
 	protected UserClient user;
 
-	protected abstract void process();
+	public abstract void process();
 
 
 }

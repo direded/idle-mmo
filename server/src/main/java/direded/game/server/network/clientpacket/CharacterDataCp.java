@@ -29,7 +29,7 @@ public class CharacterDataCp extends ClientPacket {
 		json.addProperty("tile", c.getCurrentMapTile().getId().toString());
 
 		json.add("inventory", c.getInventory().serialize(new JsonObject()));
-		json.add("process", c.getProcess().serialize(new JsonObject()));
+		json.add("task", c.getTask().serialize(new JsonObject()));
 
 		if (name != null)
 			json.addProperty("name", name);

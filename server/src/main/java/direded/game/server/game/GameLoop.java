@@ -17,6 +17,8 @@ public abstract class GameLoop {
 	public GameLoop(final GameController gameController) {
 		status = GameStatus.STOPPED;
 		this.gameController = gameController;
+
+		Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 	}
 
 	protected void onGameLoopStart() {

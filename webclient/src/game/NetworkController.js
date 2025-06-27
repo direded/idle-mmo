@@ -1,21 +1,54 @@
 /** @import { GameViewModel } from '@/game/GameViewModel' */
 import { redirect } from 'next/navigation';
+import PacketType from './PacketType'
 
 const NetworkController = (() => {
+
+	let ready = false
 
 	/** @type {GameViewModel} */
 	let viewModel = null
 
-	const packetType = {
-		tokenCl: -1,
-		userProfileCl: 10,
-		characterDataCl: 11,
-		testSv: 10000,
-		commonSv: 20000
+	/**
+	 * @type {WebSocket}
+	 */
+	let socket
+
+	/**
+	 * Packet id counter
+	 * increases every time it get gotten 
+	 */ 
+	let packetIdConter = 0
+	
+	let getNextPacketId = () => {
+		let next = packetIdCounter
+		packetIdCounter = packetIdCounter + 1
+		if (packetIdCounter > 65535) {
+			packetIdCounter = 0
+		}
+		return next
 	}
 
+	/** 
+	 * Contains callbacks for sent packets to server
+	 * @type {Object<number, Object<string, function>}>}
+	 */
+	let subscribers = {}
+	
+	for (let key in PacketType) {
+		if (key.endsWith('Cp')) {
+			subscribers[key] = {}
+		}
+	}
+
+	// TODO: move away from network controller
+	let defaultTile = {
+		activities: []
+	}
+
+	// Packet handlers 
 	const messageHandlers = {
-		[packetType.tokenCl]: (message) => {
+		[PacketType.tokenCp]: (message) => {
 			NetworkController.tokenResponseAccepted = true
 			if (!message.success) {
 				NetworkController.onError('Wrong token')
@@ -28,20 +61,25 @@ const NetworkController = (() => {
 			if (message.redirect) redirect(message.redirect);
 		},
 		
-		[packetType.userProfileCl]: (message) => {
-
+		[PacketType.gameDataCp]: (message) => {
 		},
 
-		[packetType.characterDataCl]: (message) => {
+		[PacketType.userProfileCp]: (message) => {
+			
+		},
+
+		[PacketType.characterDataCp]: (message) => {
 			let state = viewModel.state;
 			state.character.name = message.name;
-			state.process.type = message.process.type;
+			state.task = message.task;
 
-			state.currentLocation = message.tile.name;
+			state.currentLocation = { ...defaultTile, uuid: message.tile }
+			if (!state.currentLocation.name) {
+				state.currentLocation.name = message.tile
+			}
 
 			state.nearbyLocations = []
 			for (let key in message.tile.neighbors) {
-				console.log(key)
 				let tile = message.tile.neighbors[key]
 				state.nearbyLocations.push({
 					name: tile.name,
@@ -56,9 +94,13 @@ const NetworkController = (() => {
 
 	const initSocket = (token, redirect, onSuccess, onError) => {
 		console.log("WebSocket initializing..")
+		if (socket != null) {
+			socket.close()
+		}
 		NetworkController.onError = onError
 		NetworkController.onSuccess = onSuccess
-		let socket = new WebSocket('ws://localhost:9000')
+
+		socket = new WebSocket('ws://localhost:9000')
 
 		socket.onmessage = (event) => {
 			var message = JSON.parse(event.data);
@@ -112,17 +154,94 @@ const NetworkController = (() => {
 		});
 	}
 
-	var receiveMessage = (message) => {
+	let incomingMessageQueue = []
+
+	let receiveMessage = (message) => {
+		if (ready || message.packet_type == PacketType.tokenCp) {
+			return processReceivedMessage(message)
+		} else {
+			incomingMessageQueue.push(message);
+		}
+	}
+
+	let processReceivedMessage = (message) => {
+		if (message.packet_id) {
+			let callback = subscribers[message.packet_type][message.packet_id]
+			if (callback) {
+				callback(message)
+				delete subscribers[message.packet_type][message.packet_id]
+			}
+		}
+		if (message.gameData != undefined) {
+			processGameDataMessage(message)
+		}
 		return messageHandlers[message.packet_type](message)
 	}
 
+	let isObject = (a) => {
+		typeof a === 'object' && a !== null
+	}
+
+	/**
+	 * Обработка сообщения {@link message}, содержащего gameData
+	 * Алгоритм проходит по всем ключам рекурсивно, присваивая установленные в viewModel.state
+	 * 
+	 * @param {Object} message Сообщение от сервера
+	 */
+	let processGameDataMessage = (message) => {
+		if (Object.keys(message.gameData).length == 0) {
+			return
+		}
+		let from = message.gameData
+		let stack = [{from, keys: Object.keys(from), id: 0, to: viewModel.state}]
+		while (stack.length > 0) {
+			let frame = stack[stack.length - 1]
+			let keyToProcess = frame.keys[frame.id]
+			let value = frame.from[keyToProcess]
+			if (isObject(value) && frame.to[keyToProcess] != null && Object.keys(value).length > 0) {
+				stack.push({
+					from: value,
+					to: frame.to[keyToProcess],
+					keys: Object.keys(value),
+					id: 0
+				})
+			} else {
+				console.log(keyToProcess, value)
+				frame.to[keyToProcess] = value
+				frame.id = frame.id + 1
+				if (frame.id >= frame.keys.length) {
+					stack.pop()
+				}
+			}
+
+		}
+		viewModel.notifySubscribers();
+	}
+
+	let sendPacket = (message, callback) => {
+		if (callback) {
+			let packedId = getNextPacketId()
+			message.packet_id = packedId
+			subscribers[message.packet_type][packetId] = callback
+		}
+		socket.send(JSON.stringify(message))
+	}
+	
 	return {
 		onError: () => {},
 		onSuccess: () => {},
-		packetType,
 		initSocket,
 		setViewModel: (/** @type {GameViewModel} */value) => { viewModel = value },
 		isTokenValid: null,
+		setReady: (value) => {
+			ready = value;
+			if (value) {
+				for (let message of incomingMessageQueue) {
+					processReceivedMessage(message)
+				}
+				incomingMessageQueue = []
+			}
+		}
 	}
 
 })();

@@ -9,7 +9,7 @@ import lombok.Setter;
 public class TestSp extends ServerPacket {
 
 	@Override
-	protected void process() {
+	public void process() {
 
 	}
 

@@ -4,6 +4,7 @@ import direded.game.server.game.Game;
 import direded.game.server.game.UserClient;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.network.clientpacket.CharacterDataCp;
+import direded.game.server.network.clientpacket.GameDataCp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class UserJoinEvent extends GameEvent {
 			character.setClient(user);
 		}
 
-		var packet = new CharacterDataCp(userCharacters.get(0));
+		var packet = new GameDataCp(userCharacters.get(0));
 		packet.send(user);
 	}
 

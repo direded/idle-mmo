@@ -7,7 +7,7 @@ import direded.game.server.game.GameMap;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.items.ItemStack;
 import direded.game.server.game.items.ItemType;
-import direded.game.server.game.process.*;
+import direded.game.server.game.task.*;
 import direded.game.server.model.CharacterModel;
 import direded.game.server.model.UserModel;
 import direded.game.server.repository.CharacterRepository;
@@ -93,11 +93,11 @@ public class CharacterStorage {
 			logger.warn("Wrong character " + model.getId() + " json data: no \"currentTile\" key");
 		}
 
-		if (data.has("process")) {
-			var process = CharacterProcess.deserialize(character, data.get("process").getAsJsonObject());
-			character.setProcess(process);
+		if (data.has("task")) {
+			var task = CharacterTask.deserialize(character, data.get("task").getAsJsonObject());
+			character.setTask(task);
 		} else {
-			logger.warn("Wrong character " + model.getId() + " json data: no \"currentTile\" key");
+			logger.warn("Wrong character " + model.getId() + " json data: no \"task\" key");
 		}
 
 		return character;
@@ -114,7 +114,7 @@ public class CharacterStorage {
 
 		data.addProperty("currentTile", character.getCurrentMapTile().getId().toString());
 
-		data.add("process", character.getProcess().serialize(new JsonObject()));
+		data.add("task", character.getTask().serialize(new JsonObject()));
 
 		var model = new CharacterModel(character.getId());
 		model.setId(character.getId());

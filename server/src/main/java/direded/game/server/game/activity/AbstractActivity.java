@@ -14,6 +14,8 @@ public abstract class AbstractActivity {
     private final ActivityType type;
     private final UUID id;
 
+    protected String name;
+
     protected AbstractActivity(ActivityType type, UUID id) {
         this.type = type;
         this.id = id;

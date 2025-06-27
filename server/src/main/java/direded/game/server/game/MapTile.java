@@ -66,4 +66,8 @@ public class MapTile {
 		json.addProperty("name", name);
 		return json;
 	}
+
+	public String getDebugInfo() {
+		return id.toString();
+	}
 }

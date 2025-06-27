@@ -8,12 +8,15 @@ import LocationInfo from '../../components/LocationInfo';
 import { GameViewModel } from '../../game/GameViewModel';
 import TestWindow from '@/components/TestWindow';
 import ItemStackWindow from '@/components/ItemStackWindow';
+import { NetworkController } from '@/game/NetworkController';
 
 export default function CharacterPlanner() {
 	const [gameViewModel] = useState(() => new GameViewModel());
 	const [state, setState] = useState(gameViewModel.state);
 	
 	useEffect(() => {
+		NetworkController.setViewModel(gameViewModel);
+		NetworkController.setReady(true);
 		const unsubscribe = gameViewModel.subscribe((newState) => {
 			setState(prevState => ({
 				...newState

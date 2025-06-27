@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import direded.game.server.game.Game;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.items.ItemType;
-import direded.game.server.game.process.LumberjackProcess;
+import direded.game.server.game.task.LumberjackTask;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +18,7 @@ public class WoodGatherActivity extends AbstractActivity {
 
     protected WoodGatherActivity(UUID id) {
         super(ActivityType.GATHER_WOOD, id);
+		name = "Wood gathering";
     }
 
     public static WoodGatherActivity create(UUID id) {
@@ -30,6 +31,6 @@ public class WoodGatherActivity extends AbstractActivity {
 
 	@Override
 	public void processRequest(CharacterObject character, JsonObject data) {
-		Game.characterController().setProcess(character, LumberjackProcess.create(character));
+		Game.characterController().setTask(character, LumberjackTask.create(character));
 	}
 }

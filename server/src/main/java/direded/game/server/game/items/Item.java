@@ -9,6 +9,7 @@ import lombok.Setter;
 public class Item {
 
 	protected ItemType type;
+	protected String name;
 
 	public Item(ItemType type) {
 		this.type = type;

@@ -8,6 +8,7 @@ public enum PacketType {
 	TOKEN_CL(-1),
 	USER_PROFILE_CL(10),
 	UPDATE_CHARACTER_CL(11),
+	GAME_DATA_CP(9),
 	TEST_SV(10000),
 	COMMON_SV(20000);
 

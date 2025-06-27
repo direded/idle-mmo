@@ -1,20 +1,14 @@
 package direded.game.server.game.gameobject;
 
-import com.google.gson.JsonObject;
 import direded.game.server.game.MapTile;
-import direded.game.server.game.ResourceType;
 import direded.game.server.game.UserClient;
 import direded.game.server.game.inventory.Inventory;
-import direded.game.server.game.process.CharacterProcess;
+import direded.game.server.game.task.CharacterTask;
 import direded.game.server.model.UserModel;
 import direded.game.server.network.NetworkController;
 import direded.game.server.network.clientpacket.ClientPacket;
-import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -22,7 +16,7 @@ public class CharacterObject extends GameObject {
 
 	private String name;
 
-	private CharacterProcess process;
+	private CharacterTask task;
 	private MapTile currentMapTile;
 	private Inventory inventory = new Inventory();
 
@@ -41,9 +35,20 @@ public class CharacterObject extends GameObject {
 
 	public void send(ClientPacket packet) {
 		if (client == null) {
-			System.out.println("client is null");
 			return;
 		}
-		NetworkController.instance.send(client.getChannel(), packet);
+		NetworkController.instance.sendPacket(client.getChannel(), packet);
+	}
+
+	public String getDebugInfo() {
+		return String.format("%s", id);
+	}
+
+	public CharacterTask getTask() {
+		return task;
+	}
+
+	public void setTask(CharacterTask task) {
+		this.task = task;
 	}
 }

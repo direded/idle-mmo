@@ -6,15 +6,17 @@ import java.util.Map;
 public class Items {
 	public static Map<ItemType, Item> items = new HashMap<>();
 
-	public static Item berry = register(ItemType.BERRY);
-	public static Item herb = register(ItemType.HERB);
-	public static Item wood = register(ItemType.WOOD);
+	public static Item berry = register(new ItemBuilder(ItemType.BERRY).name("Berry"));
+	public static Item herb = register(new ItemBuilder(ItemType.HERB).name("Herb"));
+	public static Item wood = register(new ItemBuilder(ItemType.WOOD).name("Wood"));
+	public static Item axe = register(new ItemBuilder(ItemType.AXE).name("Axe"));
 
-	private static Item register(ItemType itemType) {
-		var item = new Item(itemType);
-		items.put(itemType, item);
+	private static Item register(ItemBuilder builder) {
+		var item = builder.build();
+		items.put(item.type, item);
 		return item;
 	}
+
 
 	public static Item getByType(ItemType type) {
 		return items.get(type);

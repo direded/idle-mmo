@@ -165,7 +165,7 @@ export default function GameInterface() {
 						{/* Activity Tile */}
 						<GameTile title="Activity" className="shrink">
 							<div className="flex items-center justify-center h-full min-w-40">
-								{state.process.type}
+								{state.task.type}
 							</div>
 						</GameTile>
 					</div>

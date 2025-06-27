@@ -11,7 +11,7 @@ public class ActivitySp extends ServerPacket {
 	private JsonObject data;
 
 	@Override
-	protected void process() {
+	public void process() {
 		var character = getUser().getActiveCharacter();
 		if (character == null) return;
 		// TODO anticheat conditions

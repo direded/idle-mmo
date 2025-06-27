@@ -10,8 +10,5 @@ services:
       - DB_URL=jdbc:postgresql://mmo_postgres:5432/game
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
     ports:
       - "9000:9000"

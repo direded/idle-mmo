@@ -3,8 +3,8 @@ package direded.game.server.game.controller;
 import direded.game.server.game.GameUtils;
 import direded.game.server.game.MapTile;
 import direded.game.server.game.gameobject.CharacterObject;
-import direded.game.server.game.process.CharacterProcess;
-import direded.game.server.game.process.MoveToTileProcess;
+import direded.game.server.game.task.CharacterTask;
+import direded.game.server.game.task.MoveToTileTask;
 import direded.game.server.network.clientpacket.CharacterDataCp;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
@@ -12,37 +12,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class CharacterController {
 
-	double time = 0;
 	public static CharacterController instance;
+	private static final String LOG_PREFIX = "CHARACTER:";
 
 	public CharacterController() {
 		instance = this;
 	}
 
-	public void setProcess(CharacterObject c, CharacterProcess process) {
-		var prevProcess = c.getProcess();
-		prevProcess.finish();
-		c.setProcess(process);
-		process.init();
+	public void setTask(CharacterObject c, CharacterTask task) {
+		GameUtils.logger.info("{} Set task {}, {}", LOG_PREFIX, c.getDebugInfo(), task.getDebugInfo());
+		var prevTask = c.getTask();
+		prevTask.finish();
+		c.setTask(task);
+		task.init();
 	}
 
 	public void moveToTile(CharacterObject c, MapTile tile) {
-		GameUtils.logger.info("trying to move to " + tile.getName());
-		if (MoveToTileProcess.canProcess(c, tile)) {
-			GameUtils.logger.info("moving to " + tile.getName());
-			setProcess(c, MoveToTileProcess.create(c, tile));
+		GameUtils.logger.info("{} Move to tile {}, {}", LOG_PREFIX, c.getDebugInfo(), tile.getDebugInfo());
+		if (MoveToTileTask.canTask(c, tile)) {
+			setTask(c, MoveToTileTask.create(c, tile));
 		}
 	}
 
 	public void tick(CharacterObject c, double delta) {
-		c.getProcess().tick(delta);
-		time = time + delta;
-		if (time >= 3) {
-			var packet = new CharacterDataCp(c);
-			packet.setName(RandomStringUtils.insecure().next(5));
-			c.send(packet);
-			time = 0;
-		}
-
+		c.getTask().tick(delta);
 	}
 }

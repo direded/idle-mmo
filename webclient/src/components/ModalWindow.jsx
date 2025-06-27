@@ -26,9 +26,7 @@ export default class ModalWindow extends Component {
 	}
 
 	onClose(t) {
-		console.log('onClose', t.props.gameViewModel.state.windowModals)
 		t.props.gameViewModel.removeWindowModal()
-		console.log('onClose', t.props.gameViewModel.state.windowModals)
 	}
 
 	componentDidMount() {
@@ -69,8 +67,6 @@ export default class ModalWindow extends Component {
 			onClose,
 			className = ''
 		} = this.props
-
-		console.log('modal window', this.props)
 
 		// useEffect(() => {
 			

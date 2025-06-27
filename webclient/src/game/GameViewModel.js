@@ -4,16 +4,11 @@ export class GameViewModel {
 	constructor() {
 		this.state = {
 			activeTab: 'general',
-			showLocationModal: false,
-			selectedLocation: null,
-			showSettingsModal: false,
 			windowModals: [
-				{ type: 'test' },
 			],
 			message: '',
 			logs: [],
 			character: {
-				uuid: '',
 				name: '',
 				health: 0,
 				maxHealth: 0,
@@ -22,83 +17,42 @@ export class GameViewModel {
 				energy: 0,
 				maxEnergy: 0
 			},
-			equipment: {
-				uuid: '',
-				head: '',
-				chest: '',
-				weapon: ''
-			},
 			inventory: {
-				uuid: '',
-				gold: 0,
-				potion: 0,
-				food: 0,
 				items: [
-					{ id: 1, name: 'Iron Sword', icon: '/assets/items/sword.png', count: 1, weight: 2.5, rarity: 'normal' },
-					{ id: 2, name: 'Steel Dagger', icon: '/assets/items/sword.png', count: 1, weight: 1.2, rarity: 'magic' },
-					{ id: 3, name: 'Leather Armor', icon: '/assets/items/leather.png', count: 1, weight: 3.0, rarity: 'normal' },
-					{ id: 4, name: 'Chain Mail', icon: '/assets/items/leather.png', count: 1, weight: 4.5, rarity: 'rare' },
-					{ id: 5, name: 'Health Potion', icon: '/assets/items/potion.png', count: 15, weight: 0.5, rarity: 'normal' },
-					{ id: 6, name: 'Mana Potion', icon: '/assets/items/potion.png', count: 8, weight: 0.5, rarity: 'normal' },
-					{ id: 7, name: 'Greater Healing Potion', icon: '/assets/items/potion.png', count: 3, weight: 0.8, rarity: 'magic' },
-					{ id: 8, name: 'Leather Scraps', icon: '/assets/items/leather.png', count: 25, weight: 0.1, rarity: 'normal' },
-					{ id: 9, name: 'Iron Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'normal' },
-					{ id: 10, name: 'Steel Ore', icon: '/assets/items/sword.png', count: 12, weight: 1.0, rarity: 'rare' }
+					// { id: 1, name: 'Iron Sword', icon: '/assets/items/sword.png', count: 1, weight: 2.5, rarity: 'normal' },
+					// { id: 2, name: 'Steel Dagger', icon: '/assets/items/sword.png', count: 1, weight: 1.2, rarity: 'magic' },
+					// { id: 4, name: 'Chain Mail', icon: '/assets/items/leather.png', count: 1, weight: 4.5, rarity: 'rare' },
 				]
 			},
-			currentLocation: {
-				uuid: '',
-				name: 'Forest Clearing',
-				description: 'A peaceful clearing surrounded by tall trees. The air is fresh and you can hear birds chirping in the distance. This area is known for its abundant resources and wildlife.',
-				activities: [
-					{ uuid: '', name: 'Gathering Wood' },
-					{ uuid: '', name: 'Hunting' },
-					{ uuid: '', name: 'Gathering Herbs' },
-					{ uuid: '', name: 'Fishing' }
-				]
-			},
-			nearbyLocations: [
-				{
-					uuid: '',
-					name: 'Dark Forest',
-					description: 'A dense forest with ancient trees. Home to dangerous creatures.',
-					distance: '0.5 km',
-					direction: 'NW'
-				},
-				{
-					uuid: '',
-					name: 'Mountain Pass',
-					description: 'A narrow path through the mountains. Rich in minerals and ores.',
-					distance: '1.2 km',
-					direction: 'W'
-				},
-				{
-					uuid: '',
-					name: 'Riverside Camp',
-					description: 'A peaceful camp by the river. Perfect for fishing and water activities.',
-					distance: '0.8 km',
-					direction: 'NE'
-				}
-			],
-			settings: {
-				uuid: '',
-				soundVolume: 0,
-				musicVolume: 0,
-				showFPS: false
-			},
-			process: {
-				uuid: '',
+			currentLocation: null,
+			// currentLocation: {
+			// 	uuid: '',
+			// 	name: 'Forest Clearing',
+			// 	description: 'A peaceful clearing surrounded by tall trees. The air is fresh and you can hear birds chirping in the distance. This area is known for its abundant resources and wildlife.',
+			// 	activities: [
+			// 		{ uuid: '', name: 'Gathering Wood' },
+			// 	]
+			// },
+			nearbyLocations: null,
+			// nearbyLocations: [
+			// 	{
+			// 		uuid: '',
+			// 		name: 'Dark Forest',
+			// 		description: 'A dense forest with ancient trees. Home to dangerous creatures.',
+			// 		distance: '0.5 km',
+			// 		direction: 'NW'
+			// 	}
+			// ],
+			task: {
 				type: "null"
 			},
 			time: {
-				uuid: '',
 				day: 'Monday',
 				date: '14.05.203',
 				time: '13:48',
 				formatted: '14.05.203 13:48'
 			},
 			weather: {
-				uuid: '',
 				condition: 'Sunny',
 				temperature: 22,
 				humidity: 65,
@@ -618,11 +572,6 @@ export class GameViewModel {
 		this.notifySubscribers();
 	}
 
-	setShowSettingsModal(show) {
-		this.state.showSettingsModal = show;
-		this.notifySubscribers();
-	}
-
 	setMessage(message) {
 		this.state.message = message;
 		this.notifySubscribers();
@@ -635,11 +584,6 @@ export class GameViewModel {
 			this.state.message = '';
 			this.notifySubscribers();
 		}
-	}
-
-	updateSettings(settings) {
-		this.state.settings = { ...this.state.settings, ...settings };
-		this.notifySubscribers();
 	}
 
 	// Game logic methods

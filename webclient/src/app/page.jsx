@@ -24,7 +24,7 @@ export default function TokenPage() {
 		}
 
 		if (!NetworkController.isTokenValid) {
-			let s = NetworkController.initSocket(token.trim(), '/game',
+			let s = NetworkController.initSocket(token.trim(), '/character-planner',
 				() => {
 					console.log('Successful connected')
 					setSocket(s);
@@ -34,7 +34,7 @@ export default function TokenPage() {
 					setSocket(null);
 				});
 		} else {
-			redirect('/game')
+			redirect('/character-planner')
 		}
 		// router.push('/game-windows');
 	};
@@ -42,15 +42,6 @@ export default function TokenPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-900 flex items-center justify-center">
-			{/* Navigation */}
-			<div className="absolute top-4 right-4 flex space-x-4">
-				<Link 
-					href="/character-planner" 
-					className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-white font-medium transition-colors"
-				>
-					Character Planner
-				</Link>
-			</div>
 
 			<div className="bg-gray-800 border-2 border-gray-700 p-8 w-full max-w-md">
 				<h1 className="text-2xl font-bold text-white mb-6 text-center">Enter Game Token</h1>

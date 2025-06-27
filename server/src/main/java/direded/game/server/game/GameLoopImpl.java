@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class GameLoopImpl extends GameLoop {
 
 	/** 20 ms per frame = 50 FPS. */
-	private static final long MS_PER_FRAME = 50;
+	private static final long MS_PER_FRAME = 500;
 	private static final double SEC_PER_FRAME = MS_PER_FRAME / 1000.d;
 
 	public GameLoopImpl(GameController gameController) {
@@ -37,7 +37,11 @@ public class GameLoopImpl extends GameLoop {
 			}
 
 			lag = lag % MS_PER_FRAME;
-
+			try {
+				Thread.sleep(MS_PER_FRAME / 2);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		onGameLoopFinish();
 	}
