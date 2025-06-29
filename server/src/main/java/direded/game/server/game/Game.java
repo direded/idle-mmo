@@ -3,6 +3,7 @@ package direded.game.server.game;
 import direded.game.server.game.activity.AbstractActivity;
 import direded.game.server.game.controller.CharacterController;
 import direded.game.server.game.controller.GameController;
+import direded.game.server.game.controller.TimeController;
 import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.storage.ActivityStorage;
 import direded.game.server.storage.CharacterStorage;
@@ -39,5 +40,9 @@ public class Game {
 
 	public static GameMap getMap() {
 		return GameMap.instance;
+	}
+
+	public static TimeController timeController() {
+		return TimeController.instance;
 	}
 }

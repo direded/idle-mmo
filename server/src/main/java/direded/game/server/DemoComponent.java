@@ -12,6 +12,7 @@ import direded.game.server.repository.UserRepository;
 import direded.game.server.repository.UserSessionRepository;
 import direded.game.server.storage.CharacterStorage;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +52,7 @@ public class DemoComponent {
 		c.getInventory().add(new ItemStack(ItemType.HERB, 1));
 		c.getInventory().add(new ItemStack(ItemType.BERRY, 2));
 		c.getInventory().add(new ItemStack(ItemType.AXE, 1));
-		c.setTask(IdleTask.get());
+		c.setTask(new IdleTask(c));
 		c.setCurrentMapTile(GameMap.instance.getTileByLabel("town"));
 		c.setUser(user);
 		return c;

@@ -17,8 +17,12 @@ public class LumberjackTask extends CharacterTask {
 	private final CharacterTaskType type = CharacterTaskType.LUMBERJACK;
 	private double time = 0;
 
+	protected LumberjackTask(CharacterObject character) {
+		super(character);
+	}
+
 	public static LumberjackTask create(CharacterObject character) {
-		var task = new LumberjackTask();
+		var task = new LumberjackTask(character);
 		task.character = character;
 		return task;
 	}

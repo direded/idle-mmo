@@ -1,7 +1,11 @@
 import { NetworkController } from './NetworkController';
+import { TimeController } from './TimeController';
 
 export class GameViewModel {
 	constructor() {
+		// Initialize TimeController first
+		this.timeController = new TimeController();
+		
 		this.state = {
 			activeTab: 'general',
 			windowModals: [
@@ -46,12 +50,6 @@ export class GameViewModel {
 			task: {
 				type: "null"
 			},
-			time: {
-				day: 'Monday',
-				date: '14.05.203',
-				time: '13:48',
-				formatted: '14.05.203 13:48'
-			},
 			weather: {
 				condition: 'Sunny',
 				temperature: 22,
@@ -62,6 +60,7 @@ export class GameViewModel {
 
 		this.networkController = NetworkController;
 		this.subscribers = new Set();
+		
 	}
 
 	// Subscribe to state changes
@@ -77,94 +76,6 @@ export class GameViewModel {
 
 	// Location Management Methods (MVVM Architecture)
 	
-	/**
-	 * Set current location information
-	 * @param {Object} location - Location object with name, description, and activities
-	 */
-	setCurrentLocation(location) {
-		this.state.currentLocation = { ...location };
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update current location name
-	 * @param {string} name - New location name
-	 */
-	setLocationName(name) {
-		this.state.currentLocation.name = name;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update current location description
-	 * @param {string} description - New location description
-	 */
-	setLocationDescription(description) {
-		this.state.currentLocation.description = description;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Set available activities for current location
-	 * @param {Array} activities - Array of activity objects with id and name
-	 */
-	setLocationActivities(activities) {
-		this.state.currentLocation.activities = [...activities];
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Add activity to current location
-	 * @param {string} activityName - Activity name to add
-	 */
-	addLocationActivity(activityName) {
-		const activityExists = this.state.currentLocation.activities.some(act => act.name === activityName);
-		if (!activityExists) {
-			const newActivity = {
-				uuid: '',
-				name: activityName
-			};
-			this.state.currentLocation.activities.push(newActivity);
-			this.notifySubscribers();
-		}
-	}
-
-	/**
-	 * Remove activity from current location
-	 * @param {string} activityName - Activity name to remove
-	 */
-	removeLocationActivity(activityName) {
-		this.state.currentLocation.activities = this.state.currentLocation.activities.filter(act => act.name !== activityName);
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Set nearby locations
-	 * @param {Array} locations - Array of location objects
-	 */
-	setNearbyLocations(locations) {
-		this.state.nearbyLocations = [...locations];
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Add nearby location
-	 * @param {Object} location - Location object with name, description, distance, direction
-	 */
-	addNearbyLocation(location) {
-		this.state.nearbyLocations.push(location);
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Remove nearby location by name
-	 * @param {string} locationName - Name of location to remove
-	 */
-	removeNearbyLocation(locationName) {
-		this.state.nearbyLocations = this.state.nearbyLocations.filter(loc => loc.name !== locationName);
-		this.notifySubscribers();
-	}
-
 	/**
 	 * Get current location information
 	 * @returns {Object} Current location object
@@ -189,32 +100,6 @@ export class GameViewModel {
 	 */
 	getInventoryItems() {
 		return this.state.inventory.items;
-	}
-
-	/**
-	 * Set all inventory items
-	 * @param {Array} items - Array of item objects
-	 */
-	setInventoryItems(items) {
-		this.state.inventory.items = [...items];
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Add item to inventory
-	 * @param {Object} item - Item object to add
-	 */
-	addInventoryItem(item) {
-		// Check if item already exists
-		const existingItem = this.state.inventory.items.find(i => i.name === item.name);
-		if (existingItem) {
-			// Update count if item exists
-			existingItem.count += item.count || 1;
-		} else {
-			// Add new item
-			this.state.inventory.items.push({ ...item, uuid: '' });
-		}
-		this.notifySubscribers();
 	}
 
 	/**
@@ -243,146 +128,90 @@ export class GameViewModel {
 		}
 	}
 
-	/**
-	 * Get inventory item by ID
-	 * @param {number} itemId - ID of item to get
-	 * @returns {Object|null} Item object or null if not found
-	 */
-	getInventoryItem(itemId) {
-		return this.state.inventory.items.find(item => item.id === itemId) || null;
-	}
-
-	/**
-	 * Get inventory item by name
-	 * @param {string} itemName - Name of item to get
-	 * @returns {Object|null} Item object or null if not found
-	 */
-	getInventoryItemByName(itemName) {
-		return this.state.inventory.items.find(item => item.name === itemName) || null;
-	}
-
-	/**
-	 * Update inventory gold
-	 * @param {number} amount - New gold amount
-	 */
-	setInventoryGold(amount) {
-		this.state.inventory.gold = amount;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Add gold to inventory
-	 * @param {number} amount - Amount to add
-	 */
-	addInventoryGold(amount) {
-		this.state.inventory.gold += amount;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Get inventory gold
-	 * @returns {number} Current gold amount
-	 */
-	getInventoryGold() {
-		return this.state.inventory.gold;
-	}
-
-	/**
-	 * Get total inventory weight
-	 * @returns {number} Total weight of all items
-	 */
-	getInventoryWeight() {
-		return this.state.inventory.items.reduce((total, item) => total + (item.weight * item.count), 0);
-	}
-
-	/**
-	 * Get inventory item count
-	 * @returns {number} Total number of unique items
-	 */
-	getInventoryItemCount() {
-		return this.state.inventory.items.length;
-	}
-
 	// Time Management Methods (MVVM Architecture)
 	
 	/**
 	 * Get current time information
-	 * @returns {Object} Time object with day, date, time, and formatted properties
+	 * @returns {Object} Time object with hours, minutes, day, and year properties
 	 */
 	getTime() {
-		return this.state.time;
+		return this.timeController.getTime();
 	}
 
 	/**
-	 * Set time information
-	 * @param {Object} time - Time object with day, date, time properties
+	 * Set time information (syncs with server)
+	 * @param {Object} time - Time object with timestamp and speed properties
 	 */
 	setTime(time) {
-		this.state.time = { 
-			...time, 
-			formatted: `${time.date} ${time.time}` 
-		};
-		this.notifySubscribers();
+		this.timeController.syncWithServer(time);
 	}
 
 	/**
-	 * Update time
-	 * @param {string} time - Time string (HH:MM format)
+	 * Get formatted time string
+	 * @returns {string} Formatted time string (HH:MM)
 	 */
-	setTimeOnly(time) {
-		this.state.time.time = time;
-		this.state.time.formatted = `${this.state.time.date} ${time}`;
-		this.notifySubscribers();
+	getFormattedTime() {
+		return this.timeController.getFormattedTime();
 	}
 
 	/**
-	 * Update date
-	 * @param {string} date - Date string (DD.MM.YYY format)
+	 * Get day name
+	 * @returns {string} Day name
 	 */
-	setDateOnly(date) {
-		this.state.time.date = date;
-		this.state.time.formatted = `${date} ${this.state.time.time}`;
-		this.notifySubscribers();
+	getDayName() {
+		return this.timeController.getDayName();
 	}
 
 	/**
-	 * Update day of week
-	 * @param {string} day - Day name
+	 * Check if time has been initialized by server
+	 * @returns {boolean} True if time is initialized
 	 */
-	setDayOnly(day) {
-		this.state.time.day = day;
-		this.notifySubscribers();
+	isTimeInitialized() {
+		return this.timeController.isTimeInitialized();
 	}
 
 	/**
-	 * Advance time by minutes
-	 * @param {number} minutes - Minutes to advance
+	 * Get time speed
+	 * @returns {number} Current time speed
 	 */
-	advanceTime(minutes) {
-		const [hours, mins] = this.state.time.time.split(':').map(Number);
-		let totalMinutes = hours * 60 + mins + minutes;
-		
-		// Handle day overflow (24 hours = 1440 minutes)
-		while (totalMinutes >= 1440) {
-			totalMinutes -= 1440;
-			this.advanceDay();
+	getTimeSpeed() {
+		return this.timeController.speed;
+	}
+
+	/**
+	 * Get TimeController instance for direct subscription
+	 * @returns {TimeController} TimeController instance
+	 */
+	getTimeController() {
+		return this.timeController;
+	}
+
+	/**
+	 * Start time prediction
+	 */
+	startTimePrediction() {
+		// Only start if time has been initialized by server
+		if (this.timeController.isTimeInitialized()) {
+			this.timeController.start();
 		}
-		
-		const newHours = Math.floor(totalMinutes / 60);
-		const newMins = totalMinutes % 60;
-		const newTime = `${newHours.toString().padStart(2, '0')}:${newMins.toString().padStart(2, '0')}`;
-		
-		this.setTimeOnly(newTime);
 	}
 
 	/**
-	 * Advance to next day
+	 * Stop time prediction
 	 */
-	advanceDay() {
-		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-		const currentDayIndex = days.indexOf(this.state.time.day);
-		const nextDayIndex = (currentDayIndex + 1) % 7;
-		this.setDayOnly(days[nextDayIndex]);
+	stopTimePrediction() {
+		this.timeController.stop();
+	}
+
+	/**
+	 * Clean up resources
+	 */
+	destroy() {
+		this.stopTimePrediction();
+		if (this.timeController) {
+			this.timeController.destroy();
+		}
+		this.subscribers.clear();
 	}
 
 	// Weather Management Methods (MVVM Architecture)
@@ -393,51 +222,6 @@ export class GameViewModel {
 	 */
 	getWeather() {
 		return this.state.weather;
-	}
-
-	/**
-	 * Set weather information
-	 * @param {Object} weather - Weather object with condition, temperature, humidity, windSpeed
-	 */
-	setWeather(weather) {
-		this.state.weather = { ...weather };
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update weather condition
-	 * @param {string} condition - Weather condition (e.g., 'Sunny', 'Rainy', 'Cloudy')
-	 */
-	setWeatherCondition(condition) {
-		this.state.weather.condition = condition;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update temperature
-	 * @param {number} temperature - Temperature in Celsius
-	 */
-	setTemperature(temperature) {
-		this.state.weather.temperature = temperature;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update humidity
-	 * @param {number} humidity - Humidity percentage
-	 */
-	setHumidity(humidity) {
-		this.state.weather.humidity = humidity;
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Update wind speed
-	 * @param {number} windSpeed - Wind speed in km/h
-	 */
-	setWindSpeed(windSpeed) {
-		this.state.weather.windSpeed = windSpeed;
-		this.notifySubscribers();
 	}
 
 	/**
@@ -477,60 +261,6 @@ export class GameViewModel {
 	}
 
 	/**
-	 * Add multiple log entries at once
-	 * @param {Array} messages - Array of log messages
-	 * @param {string} type - The type of log for all messages (optional)
-	 */
-	addLogs(messages, type = 'info') {
-		const timestamp = new Date().toLocaleTimeString('en-US', { 
-			hour12: false, 
-			hour: '2-digit', 
-			minute: '2-digit' 
-		});
-		
-		const newLogs = messages.map(message => ({
-			type,
-			content: `[${timestamp}] ${message}`,
-			timestamp
-		}));
-		
-		this.state.logs = [...this.state.logs, ...newLogs];
-		this.notifySubscribers();
-	}
-
-	/**
-	 * Set logs to a specific array (replaces all existing logs)
-	 * @param {Array} logs - Array of log objects or strings
-	 */
-	setLogs(logs) {
-		if (Array.isArray(logs)) {
-			// If logs are strings, convert them to log objects
-			const processedLogs = logs.map(log => {
-				if (typeof log === 'string') {
-					const timestamp = new Date().toLocaleTimeString('en-US', { 
-						hour12: false, 
-						hour: '2-digit', 
-						minute: '2-digit' 
-					});
-					return { type: 'info', content: log, timestamp };
-				}
-				return log;
-			});
-			
-			this.state.logs = processedLogs;
-			this.notifySubscribers();
-		}
-	}
-
-	/**
-	 * Clear all logs
-	 */
-	clearLogs() {
-		this.state.logs = [];
-		this.notifySubscribers();
-	}
-
-	/**
 	 * Get all logs as formatted strings for display
 	 * @returns {Array} Array of formatted log strings
 	 */
@@ -538,82 +268,9 @@ export class GameViewModel {
 		return this.state.logs.map(log => log.content);
 	}
 
-	/**
-	 * Get logs filtered by type
-	 * @param {string} type - The type of logs to filter by
-	 * @returns {Array} Array of filtered log objects
-	 */
-	getLogsByType(type) {
-		return this.state.logs.filter(log => log.type === type);
-	}
-
-	/**
-	 * Get the most recent N logs
-	 * @param {number} count - Number of recent logs to return
-	 * @returns {Array} Array of recent log objects
-	 */
-	getRecentLogs(count = 10) {
-		return this.state.logs.slice(-count);
-	}
-
-	// State update methods
-	setActiveTab(tab) {
-		this.state.activeTab = tab;
-		this.notifySubscribers();
-	}
-
-	setShowLocationModal(show) {
-		this.state.showLocationModal = show;
-		this.notifySubscribers();
-	}
-
-	setSelectedLocation(location) {
-		this.state.selectedLocation = location;
-		this.notifySubscribers();
-	}
-
-	setMessage(message) {
-		this.state.message = message;
-		this.notifySubscribers();
-	}
-
-	sendMessage() {
-		if (this.state.message.trim()) {
-			const newLog = { type: 'user', content: this.state.message };
-			this.state.logs = [...this.state.logs, newLog];
-			this.state.message = '';
-			this.notifySubscribers();
-		}
-	}
-
-	// Game logic methods
-	updateCharacterStats(stats) {
-		this.state.character = { ...this.state.character, ...stats };
-		this.notifySubscribers();
-	}
-
-	updateEquipment(equipment) {
-		this.state.equipment = { ...this.state.equipment, ...equipment };
-		this.notifySubscribers();
-	}
-
-	updateInventory(inventory) {
-		this.state.inventory = { ...this.state.inventory, ...inventory };
-		this.notifySubscribers();
-	}
-
-	changeLocation(location) {
-		this.state.currentLocation = location;
-		this.notifySubscribers();
-	}
-
+	// Window Modal Management
 	removeWindowModal(id) {
 		this.state.windowModals = [];
-		this.notifySubscribers();
-	}
-
-	addWindowModal(modal) {
-		this.state.windowModals = [modal];
 		this.notifySubscribers();
 	}
 

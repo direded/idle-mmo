@@ -8,6 +8,7 @@ import direded.game.server.game.gameobject.CharacterObject;
 import direded.game.server.game.items.ItemStack;
 import direded.game.server.game.items.ItemType;
 import org.springframework.stereotype.Component;
+import direded.game.server.game.controller.TimeController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -92,12 +93,9 @@ public class ClientGameDataAggregator {
 		
 		// Time data
 		var timeJson = new JsonObject();
-		var now = LocalDateTime.now();
-		var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-		timeJson.addProperty("day", now.getDayOfWeek().name());
-		timeJson.addProperty("date", now.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-		timeJson.addProperty("time", now.format(DateTimeFormatter.ofPattern("HH:mm")));
-		timeJson.addProperty("formatted", now.format(formatter));
+		var timeController = TimeController.instance;
+		timeJson.addProperty("timestamp", timeController.getTime().getTime());
+		timeJson.addProperty("speed", timeController.getTimeSpeed());
 		json.add("time", timeJson);
 
 		// Weather data

@@ -7,9 +7,14 @@ public abstract class CharacterTask {
 
 	protected CharacterObject character;
 
+	public CharacterTask(CharacterObject character) {
+		this.character = character;
+	}
+
 	public abstract String getName();
 	public abstract CharacterTaskType getType();
 	public abstract void tick(double delta);
+
 	public JsonObject serialize(JsonObject json) {
 		json.addProperty("type", getType().toString());
 		return json;
@@ -26,13 +31,12 @@ public abstract class CharacterTask {
 		var type = CharacterTaskType.valueOf(json.get("type").getAsString());
 
 		CharacterTask task = switch (type) {
-			case LUMBERJACK -> new LumberjackTask();
-			case MOVE_TO_TILE -> new MoveToTileTask();
-			case IDLE -> IdleTask.get();
+			case LUMBERJACK -> new LumberjackTask(character);
+			case MOVE_TO_TILE -> new MoveToTileTask(character);
+			case IDLE -> new IdleTask(character);
 			default -> null;
 		};
 
-		task.character = character;
 		task.deserialize(json);
 
 		return task;

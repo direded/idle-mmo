@@ -192,6 +192,17 @@ const NetworkController = (() => {
 		if (Object.keys(message.gameData).length == 0) {
 			return
 		}
+		
+		// Check if time data is being updated
+		let hasTimeUpdate = false;
+		let timeData = null;
+		
+		// Check for time data in the message (new format: { timestamp, speed })
+		if (message.gameData.time) {
+			hasTimeUpdate = true;
+			timeData = message.gameData.time;
+		}
+		
 		let from = message.gameData
 		let stack = [{from, keys: Object.keys(from), id: 0, to: viewModel.state}]
 		while (stack.length > 0) {
@@ -213,8 +224,13 @@ const NetworkController = (() => {
 					stack.pop()
 				}
 			}
-
 		}
+		
+		// Sync time with TimeController if time data was received
+		if (hasTimeUpdate && viewModel.timeController) {
+			viewModel.timeController.syncWithServer(timeData);
+		}
+		
 		viewModel.notifySubscribers();
 	}
 

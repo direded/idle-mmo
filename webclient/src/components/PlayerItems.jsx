@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import ItemStackWindow from './ItemStackWindow';
 
 export default function PlayerItems({ gameViewModel }) {
   const [playerItems, setPlayerItems] = useState([]);
@@ -25,7 +24,7 @@ export default function PlayerItems({ gameViewModel }) {
     e.preventDefault();
     // Add the ItemStackWindow to the windowModals
     if (gameViewModel) {
-      gameViewModel.addWindowModal({
+      gameViewModel.setWindowModal({
         type: 'itemStack',
         item: item,
         gameViewModel: gameViewModel

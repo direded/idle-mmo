@@ -2,13 +2,15 @@
 
 import { useState, useEffect, createElement } from 'react';
 import PlayerItems from '../../components/PlayerItems';
-import GameInfo from '../../components/GameInfo';
 import ActivityLog from '../../components/ActivityLog';
 import LocationInfo from '../../components/LocationInfo';
 import { GameViewModel } from '../../game/GameViewModel';
 import TestWindow from '@/components/TestWindow';
 import ItemStackWindow from '@/components/ItemStackWindow';
 import { NetworkController } from '@/game/NetworkController';
+import TimeComponent from '@/components/TimeComponent';
+import WeatherComponent from '@/components/WeatherComponent';
+
 
 export default function CharacterPlanner() {
 	const [gameViewModel] = useState(() => new GameViewModel());
@@ -22,35 +24,31 @@ export default function CharacterPlanner() {
 				...newState
 			}))
 		});
-		return () => unsubscribe();
+		
+		// Start time prediction when component mounts
+		gameViewModel.startTimePrediction();
+		
+		return () => {
+			unsubscribe();
+			// Stop time prediction when component unmounts
+			gameViewModel.stopTimePrediction();
+			// Clean up resources
+			gameViewModel.destroy();
+		};
 	}, []);
 
 	useEffect(() => {
 		document.addEventListener('contextmenu', event => event.preventDefault());
 		
-		// Initialize with some sample logs
-		gameViewModel.addLogs([
-			'Entered the character planner',
-			'Loaded character data for Exile',
-			'Initialized character planner interface',
-			'Connected to game server',
-			'Starting character planner application',
-			'Loading character assets',
-			'Initializing game components',
-			'Establishing connection',
-			'Application startup complete',
-			'Loading configuration files',
-			'Starting character planner'
-		]);
-	}, [gameViewModel]);
+	}, []);
 
 
-  const [activeView, setActiveView] = useState('stats');
+  const [activeView, setActiveView] = useState('location');
 
 
   const renderMainContent = () => {
     switch (activeView) {
-      case 'stats':
+      case 'location':
         return (
           <div className="flex flex-col h-full">
             <LocationInfo gameViewModel={gameViewModel} />
@@ -86,20 +84,25 @@ export default function CharacterPlanner() {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 text-[10px]">
       <div className="flex h-screen">
-        {/* Center Panel - Game Info, View Buttons & Character Stats */}
+        {/* Center Panel - Game Info, View Buttons & Character location */}
         <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
           {/* Game Info */}
           <div className="p-1 border-b border-gray-700">
-            <GameInfo gameViewModel={gameViewModel} />
+						<div className="flex items-center space-x-6">
+							<TimeComponent gameViewModel={gameViewModel} />
+					
+							{/* Weather Component */}
+							<WeatherComponent gameViewModel={gameViewModel} />
+						</div>
           </div>
 
           {/* View Buttons */}
           <div className="p-1 border-b border-gray-700">
             <div className="grid grid-cols-2 gap-1">
               <button
-                onClick={() => setActiveView('stats')}
+                onClick={() => setActiveView('location')}
                 className={`px-1 py-0.5 rounded text-[10px] transition-colors cursor-pointer ${
-                  activeView === 'stats' 
+                  activeView === 'location' 
                     ? 'bg-orange-600 text-white' 
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}

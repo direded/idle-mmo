@@ -40,6 +40,7 @@ public class GameController {
 	private final NetworkController networkController;
 	private final EventController eventController;
 	private final CharacterController characterController;
+	private final TimeController timeController;
 
 	private final UserSessionRepository userSessionRepository;
 	private final UserRepository userRepository;
@@ -61,6 +62,9 @@ public class GameController {
 	}
 
 	public void tick(double delta) {
+		// Update game time
+		timeController.tick((float) delta);
+		
 		for (var character : Game.getCharacters()) {
 			characterController.tick(character, delta);
 		}

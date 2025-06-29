@@ -21,8 +21,12 @@ public class MoveToTileTask extends CharacterTask {
 	private double totalTime = 0;
 	private MapTile targetTile;
 
+	protected MoveToTileTask(CharacterObject character) {
+		super(character);
+	}
+
 	public static MoveToTileTask create(CharacterObject character, MapTile tile) {
-		var task = new MoveToTileTask();
+		var task = new MoveToTileTask(character);
 		task.character = character;
 		task.targetTile = tile;
 		return task;
@@ -46,7 +50,7 @@ public class MoveToTileTask extends CharacterTask {
 		time += delta;
 		if (time >= totalTime) {
 			character.setCurrentMapTile(targetTile);
-			CharacterController.instance.setTask(character, new IdleTask());
+			CharacterController.instance.setTask(character, new IdleTask(character));
 		}
 	}
 
