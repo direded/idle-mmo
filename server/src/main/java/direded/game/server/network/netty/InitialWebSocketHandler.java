@@ -9,6 +9,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.*;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,35 +21,38 @@ public class InitialWebSocketHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
-		if (msg instanceof TextWebSocketFrame) {
-			logger.debug("Registering client..");
-			var jsonString = ((TextWebSocketFrame) msg).text();
-			JsonObject json;
-			try {
-				json = gson.fromJson(jsonString, JsonObject.class);
-			} catch(Exception exception) {
-				logger.error("Wrong json incoming", exception);
-				abortConnection(ctx.channel());
-				return;
-			}
-			if (!json.has("token")) {
-				abortConnection(ctx.channel());
-				return;
-			}
-			var token = json.get("token").getAsString();
-			var client = NetworkController.instance.registerClient(ctx.channel(), token);
-			if (client != null) {
-				var packet = new TokenResponseCp(client.getModel(), true);
-				var jsonRedirect = json.get("redirect");
-				if (jsonRedirect.isJsonPrimitive() && jsonRedirect.getAsJsonPrimitive().isString()) {
-					packet.setRedirect(json.get("redirect").getAsString());
+		try {
+			if (msg instanceof TextWebSocketFrame) {
+				logger.debug("Registering client..");
+				var jsonString = ((TextWebSocketFrame) msg).text();
+				JsonObject json;
+				try {
+					json = gson.fromJson(jsonString, JsonObject.class);
+				} catch(Exception exception) {
+					logger.error("Wrong json incoming", exception);
+					abortConnection(ctx.channel());
+					return;
 				}
-				packet.send(client);
-				ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
-			} else {
-				new TokenResponseCp(null, false).send(ctx.channel());
+				if (!json.has("token")) {
+					abortConnection(ctx.channel());
+					return;
+				}
+				var token = json.get("token").getAsString();
+				var client = NetworkController.instance.registerClient(ctx.channel(), token);
+				if (client != null) {
+					var packet = new TokenResponseCp(client.getModel(), true);
+					var jsonRedirect = json.get("redirect");
+					if (jsonRedirect.isJsonPrimitive() && jsonRedirect.getAsJsonPrimitive().isString()) {
+						packet.setRedirect(json.get("redirect").getAsString());
+					}
+					packet.send(client);
+					ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
+				} else {
+					new TokenResponseCp(null, false).send(ctx.channel());
+				}
 			}
+		} finally {
+			ReferenceCountUtil.release(msg);
 		}
 	}
 

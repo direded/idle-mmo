@@ -125,7 +125,9 @@ public class NetworkController {
 		json.addProperty("packet_type", packet.getPacketType().getValue());
 		var responseId = packet.getPacketResponseId();
 		json.addProperty("packet_id", responseId);
-		channel.writeAndFlush(new TextWebSocketFrame(gson.toJson(json)));
+		var frame = new TextWebSocketFrame(gson.toJson(json));
+		channel.writeAndFlush(frame);
+//		frame.release();
 	}
 
 	public void processPackets() {

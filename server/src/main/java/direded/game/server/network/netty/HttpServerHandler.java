@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,29 +16,33 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		if (msg instanceof HttpRequest httpRequest) {
+		try {
+			if (msg instanceof HttpRequest httpRequest) {
 
-			logger.debug("Http Request Received");
+				logger.debug("Http Request Received");
 
-			HttpHeaders headers = httpRequest.headers();
-			logger.debug("Connection : " +headers.get("Connection"));
-			logger.debug("Upgrade : " + headers.get("Upgrade"));
+				HttpHeaders headers = httpRequest.headers();
+				logger.debug("Connection : " +headers.get("Connection"));
+				logger.debug("Upgrade : " + headers.get("Upgrade"));
 
-			if ("Upgrade".equalsIgnoreCase(headers.get(HttpHeaderNames.CONNECTION)) &&
-					"WebSocket".equalsIgnoreCase(headers.get(HttpHeaderNames.UPGRADE))) {
+				if ("Upgrade".equalsIgnoreCase(headers.get(HttpHeaderNames.CONNECTION)) &&
+						"WebSocket".equalsIgnoreCase(headers.get(HttpHeaderNames.UPGRADE))) {
 
-				//Adding new handler to the existing pipeline to handle WebSocket Messages
-				ctx.pipeline().replace(this, "initialWebsocketHandler", new InitialWebSocketHandler());
+					//Adding new handler to the existing pipeline to handle WebSocket Messages
+					ctx.pipeline().replace(this, "initialWebsocketHandler", new InitialWebSocketHandler());
 
-				logger.debug("WebSocketHandler added to the pipeline");
-				logger.debug("Opened Channel : " + ctx.channel());
-				logger.debug("Handshaking....");
-				//Do the Handshake to upgrade connection from HTTP to WebSocket protocol
-				handleHandshake(ctx, httpRequest);
-				logger.debug("Handshake is done");
+					logger.debug("WebSocketHandler added to the pipeline");
+					logger.debug("Opened Channel : " + ctx.channel());
+					logger.debug("Handshaking....");
+					//Do the Handshake to upgrade connection from HTTP to WebSocket protocol
+					handleHandshake(ctx, httpRequest);
+					logger.debug("Handshake is done");
+				}
+			} else {
+				logger.debug("Incoming request is unknown");
 			}
-		} else {
-			logger.debug("Incoming request is unknown");
+		} finally {
+			ReferenceCountUtil.release(msg);
 		}
 	}
 
