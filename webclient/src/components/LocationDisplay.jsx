@@ -37,21 +37,21 @@ export default function LocationDisplay({ gameController }) {
   };
 
   return (
-    <div className="flex-1 text-gray-400">
+    <div className="flex-initial text-gray-400 min-h-0">
       
       {/* Current Location Information */}
 			{currentLocation && (
-				<div className="p-2 border-gray-700 border-b flex-shrink-0 bg-gray-800">
-					<div className="flex-shrink-0">
+				<div className="p-2 border-gray-700 border-b flex-shrink-0 bg-gray-800 min-h-0">
+					<div className="flex-shrink-0 min-h-0">
 						<h2 className="text-base font-bold text-white mb-1">{currentLocation.name}</h2>
 					</div>
-					<div className="">
+					<div className="min-h-0">
 						<p className="text-xs text-gray-300 mb-3 pl-1">
 							{currentLocation.description}
 						</p>
-						<div>
-							<h4 className="text-sm font-bold text-white mb-1">Activities:</h4>
-							<div className="space-y-0">
+						<div className="min-h-0">
+							<h4 className="text-sm font-bold text-white mb-1 min-h-0">Activities:</h4>
+							<div className="space-y-0 min-h-0">
 								{currentLocation.activities.map((activity, index) => (
 									<div 
 										key={activity.uuid || index}
@@ -68,11 +68,11 @@ export default function LocationDisplay({ gameController }) {
 			)}
 			
 			{currentLocation && (
-				<div className="p-2 flex-shrink-0 bg-gray-800">
-					<div className="flex-shrink-0">
+				<div className="p-2 flex-shrink-0 bg-gray-800 min-h-0">
+					<div className="flex-shrink-0 min-h-0">
 						<h2 className="text-base font-bold text-white">Nearby Locations</h2>
 					</div>
-					<div className="">
+					<div className="min-h-0">
 						<div className="">
 							{nearbyLocations.map((location, index) => (
 								<div 

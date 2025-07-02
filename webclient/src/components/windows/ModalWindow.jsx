@@ -8,7 +8,7 @@ export default class ModalWindow extends PureComponent {
 		super(props)
 
 		this.state = {
-			position: { x: 100, y: 100 },
+			position: null, // null means use centered
 			isDragging: false,
 			dragOffset: { x: 0, y: 0 }
 		}
@@ -20,9 +20,19 @@ export default class ModalWindow extends PureComponent {
 				dragOffset: {
 					x: e.clientX - rect.left,
 					y: e.clientY - rect.top
-				}
+				},
+				position: this.state.position || this.getCenteredPosition()
 			})
 		}
+	}
+
+	getCenteredPosition() {
+		// Center the modal in the viewport
+		const width = 500; // modal width
+		const height = 300; // estimated modal height
+		const x = Math.max((window.innerWidth - width) / 2, 0);
+		const y = Math.max((window.innerHeight - height) / 2, 0);
+		return { x, y };
 	}
 
 	onClose(t) {
@@ -36,7 +46,6 @@ export default class ModalWindow extends PureComponent {
 
 		const handleMouseMove = (e) => {
 			if (!this.state.isDragging) return
-			
 			const newX = e.clientX - this.state.dragOffset.x
 			const newY = e.clientY - this.state.dragOffset.y
 			this.setState({
@@ -46,6 +55,11 @@ export default class ModalWindow extends PureComponent {
 
 		window.addEventListener('mousemove', handleMouseMove)
 		window.addEventListener('mouseup', handleMouseUp)
+
+		// Set initial position to center
+		if (!this.state.position) {
+			this.setState({ position: this.getCenteredPosition() })
+		}
 
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove)
@@ -62,27 +76,23 @@ export default class ModalWindow extends PureComponent {
 
 	render() {
 		const {
-			title = '',
+			title,
 			children,
 			onClose,
 			className = ''
 		} = this.props
 
-		// useEffect(() => {
-			
-		// }, [this.state.isDragging, this.state.dragOffset])
+		const { position } = this.state;
 
 		return (
 			<>
 				{/* Black backdrop */}
-				<div className="fixed inset-0 bg-black/25 z-40" />
-				
+				<div className="fixed inset-0 bg-black/25 z-40"
+					onClick={() => this.onClose(this)}
+				/>
 				<div
 					className="fixed z-50"
-					style={{
-						left: `${this.state.position.x}px`,
-						top: `${this.state.position.y}px`
-					}}
+					style={position ? { left: `${position.x}px`, top: `${position.y}px` } : {}}
 				>
 					<div className="bg-gray-800 overflow-hidden w-[500px] border border-gray-500 rounded-lg">
 						{/* Title Bar */}
@@ -99,11 +109,7 @@ export default class ModalWindow extends PureComponent {
 								×
 							</button>
 						</div>
-
-						{/* Content */}
-						<div className="p-4">
-							{children || this.renderContent()}
-						</div>
+						{children || this.renderContent()}
 					</div>
 				</div>
 			</>
@@ -111,3 +117,4 @@ export default class ModalWindow extends PureComponent {
 	}
 
 }
+

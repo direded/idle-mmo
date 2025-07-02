@@ -28,16 +28,14 @@ export default function TaskDisplay({ gameController }) {
 	}
 
 	return (
-		<div className="p-2 border-t border-gray-700">
+		<div className="border-t border-gray-700 text-center min-h-30 hover:bg-gray-700 transition-colors cursor-pointer"
+			onClick={handleTaskClick}
+		>
 			<div 
-				className="p-2 cursor-pointer hover:bg-gray-700 transition-colors"
-				onClick={handleTaskClick}
+				className="p-2"
+				
 			>
-				<h4 className="text-sm font-bold text-white">Current Task</h4>
-				<p className="text-xs text-gray-300">{state.task.name || 'Unknown Task'}</p>
-				{state.task.type && (
-					<div className="text-xs text-gray-400 mt-1">Type: {state.task.type}</div>
-				)}
+				<p className="text-sm text-gray-300">{state.task.type}</p>
 			</div>
 		</div>
 	);

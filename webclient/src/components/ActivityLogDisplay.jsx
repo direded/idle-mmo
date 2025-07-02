@@ -25,23 +25,64 @@ const ActivityLogDisplay = memo(function ActivityLogDisplay({ gameController }) 
     '[12:31] You have entered the Forest Clearing',
     '[12:32] You found some wood while gathering',
     '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
+    '[12:33] A wild animal appeared nearby',
     '[12:34] You successfully crafted a basic tool'
   ];
 
   const displayLogs = logs.length > 0 ? logs : defaultLogs;
 
   return (
-    <div className="flex-1 bg-gray-800 p-2 overflow-hidden">
-      <div className="flex-shrink-0 mb-2">
+    <div className="border-t-1 border-gray-700 flex flex-col bg-gray-800 p-2 min-h-0 basis-3/10 mt-auto">
+      <div className="mb-1">
         <h2 className="text-sm font-bold text-white">Activity Log</h2>
       </div>
-      <div className="flex-1 overflow-y-auto text-xs text-gray-300 space-y-1">
-        {displayLogs.map((log, index) => (
-          <div key={index} className="text-[10px] leading-tight">
-            {log}
-          </div>
-        ))}
-      </div>
+			<div className="shrink-1 overflow-y-scroll">
+				<div className="text-xs text-gray-300 space-y-1">
+					{displayLogs.map((log, index) => (
+						<div key={index} className="text-[10px] leading-tight">
+							{log}
+						</div>
+					))}
+				</div>
+			</div>
     </div>
   );
 });
