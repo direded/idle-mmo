@@ -1,39 +1,41 @@
 'use client';
 
 import { useState, useEffect, createElement } from 'react';
-import PlayerItems from '../../components/PlayerItems';
-import ActivityLog from '../../components/ActivityLog';
-import LocationInfo from '../../components/LocationInfo';
-import { GameViewModel } from '../../game/GameViewModel';
-import TestWindow from '@/components/TestWindow';
-import ItemStackWindow from '@/components/ItemStackWindow';
+import CharacterInventoryDisplay from '../../components/CharacterInventoryDisplay';
+import ActivityLogDisplay from '../../components/ActivityLogDisplay';
+import LocationDisplay from '../../components/LocationDisplay';
+import { GameController } from '../../game/GameController';
+import TestWindow from '@/components/windows/TestWindow';
+import ItemStackWindow from '@/components/windows/ItemStackWindow';
+import TaskWindow from '@/components/windows/TaskWindow';
+import TaskDisplay from '@/components/TaskDisplay';
 import { NetworkController } from '@/game/NetworkController';
-import TimeComponent from '@/components/TimeComponent';
-import WeatherComponent from '@/components/WeatherComponent';
+import TimeDisplay from '@/components/TimeDisplay';
+import WeatherDisplay from '@/components/WeatherDisplay';
 
 
 export default function CharacterPlanner() {
-	const [gameViewModel] = useState(() => new GameViewModel());
-	const [state, setState] = useState(gameViewModel.state);
+	const [gameController] = useState(() => new GameController());
+	const [state, setState] = useState(gameController.state);
 	
 	useEffect(() => {
-		NetworkController.setViewModel(gameViewModel);
+		NetworkController.setViewModel(gameController);
 		NetworkController.setReady(true);
-		const unsubscribe = gameViewModel.subscribe((newState) => {
+		const unsubscribe = gameController.subscribe((newState) => {
 			setState(prevState => ({
 				...newState
 			}))
 		});
 		
 		// Start time prediction when component mounts
-		gameViewModel.startTimePrediction();
+		gameController.startTimePrediction();
 		
 		return () => {
 			unsubscribe();
 			// Stop time prediction when component unmounts
-			gameViewModel.stopTimePrediction();
+			gameController.stopTimePrediction();
 			// Clean up resources
-			gameViewModel.destroy();
+			gameController.destroy();
 		};
 	}, []);
 
@@ -51,8 +53,8 @@ export default function CharacterPlanner() {
       case 'location':
         return (
           <div className="flex flex-col h-full">
-            <LocationInfo gameViewModel={gameViewModel} />
-            <ActivityLog gameViewModel={gameViewModel} />
+            <LocationDisplay gameController={gameController} />
+            <ActivityLogDisplay gameController={gameController} />
           </div>
         );
       case 'skills':
@@ -89,10 +91,10 @@ export default function CharacterPlanner() {
           {/* Game Info */}
           <div className="p-1 border-b border-gray-700">
 						<div className="flex items-center space-x-6">
-							<TimeComponent gameViewModel={gameViewModel} />
+							<TimeDisplay gameController={gameController} />
 					
 							{/* Weather Component */}
-							<WeatherComponent gameViewModel={gameViewModel} />
+							<WeatherDisplay gameController={gameController} />
 						</div>
           </div>
 
@@ -123,14 +125,17 @@ export default function CharacterPlanner() {
               </button>
               <button
                 disabled
-                className="px-1 py-0.5 rounded text-[10px] bg-gray-800 text-gray-500 cursor-not-allowed"
+                className="px-1 py-0.5 rounded text-[10px] bg-gray-800 text-gray-800 text-gray-500 cursor-not-allowed"
               >
                 Equipment
               </button>
             </div>
           </div>
 
-          <PlayerItems gameViewModel={gameViewModel} />
+          <CharacterInventoryDisplay gameController={gameController} />
+          
+          {/* Task Display */}
+          <TaskDisplay gameController={gameController} />
         </div>
 
         {/* Main Canvas */}
@@ -139,16 +144,18 @@ export default function CharacterPlanner() {
         </div>
       </div>
 			{/* Modals */}
-			{gameViewModel.state.windowModals.map((modal, index) => {
+			{gameController.state.windowModals.map((modal, index) => {
 					var result
 					if (modal.type == 'test') {
-						result = createElement(TestWindow, { key: index, gameViewModel: gameViewModel, ...modal });
+						result = createElement(TestWindow, { key: index, gameController: gameController, ...modal });
 					} else if (modal.type == 'itemStack') {
-						result = createElement(ItemStackWindow, { key: index, gameViewModel: gameViewModel, ...modal });
+						result = createElement(ItemStackWindow, { key: index, gameController: gameController, ...modal });
+					} else if (modal.type == 'task') {
+						result = createElement(TaskWindow, { key: index, gameController: gameController, ...modal });
 					}
 					return result
 						
 				})}
     </div>
   );
-} 
+}

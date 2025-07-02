@@ -2,28 +2,23 @@
 
 import { useState, useEffect } from 'react';
 
-export default function TimeComponent({ gameViewModel }) {
-  const [time, setTime] = useState({
-    hours: -1,
-    minutes: -1,
-    day: -1,
-    year: -1
-  });
+export default function TimeDisplay({ gameController }) {
+  const [time, setTime] = useState({ hours: 0, minutes: 0, day: 1, year: 1 });
 
   useEffect(() => {
-    if (gameViewModel) {
-      // Subscribe only to time changes from TimeController
-      const timeController = gameViewModel.getTimeController();
-      const unsubscribe = timeController.subscribe((timeData) => {
-        setTime(timeData);
+    if (gameController) {
+      // Subscribe to time changes
+      const timeController = gameController.getTimeController();
+      const unsubscribe = timeController.subscribe((newTime) => {
+        setTime(newTime);
       });
 
-      // Initialize with current time data
-      setTime(timeController.getTime());
+      // Initialize with current time
+      setTime(gameController.getTime());
 
       return unsubscribe;
     }
-  }, [gameViewModel]);
+  }, [gameController]);
 
   const formatTime = (hours, minutes) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, Component } from 'react'
+import { useState, useEffect, PureComponent } from 'react'
 
-export default class ModalWindow extends Component {
+export default class ModalWindow extends PureComponent {
 
 	constructor(props) {
 		super(props)
@@ -26,7 +26,7 @@ export default class ModalWindow extends Component {
 	}
 
 	onClose(t) {
-		t.props.gameViewModel.removeWindowModal()
+		t.props.gameController.removeWindowModal()
 	}
 
 	componentDidMount() {
@@ -62,7 +62,7 @@ export default class ModalWindow extends Component {
 
 	render() {
 		const {
-			title = 'Modal Window',
+			title = '',
 			children,
 			onClose,
 			className = ''

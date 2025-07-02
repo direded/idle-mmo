@@ -2,37 +2,37 @@
 
 import { useState, useEffect } from 'react';
 
-export default function LocationInfo({ gameViewModel }) {
+export default function LocationDisplay({ gameController }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [nearbyLocations, setNearbyLocations] = useState([]);
 
   useEffect(() => {
-    if (gameViewModel) {
+    if (gameController) {
       // Subscribe to state changes
-      const unsubscribe = gameViewModel.subscribe((state) => {
+      const unsubscribe = gameController.subscribe((state) => {
         setCurrentLocation(state.currentLocation);
         setNearbyLocations(state.nearbyLocations);
       });
 
       // Initialize with current data
-      setCurrentLocation(gameViewModel.getCurrentLocation());
-      setNearbyLocations(gameViewModel.getNearbyLocations());
+      setCurrentLocation(gameController.getCurrentLocation());
+      setNearbyLocations(gameController.getNearbyLocations());
 
       return unsubscribe;
     }
-  }, [gameViewModel]);
+  }, [gameController]);
 
   const handleActivityClick = (activity) => {
     console.log(`${activity.name} clicked`);
-    if (gameViewModel) {
-      gameViewModel.addLog(`Started activity: ${activity.name}`, 'activity');
+    if (gameController) {
+      gameController.addLog(`Started activity: ${activity.name}`, 'activity');
     }
   };
 
   const handleLocationClick = (location) => {
     console.log(`${location.name} clicked`);
-    if (gameViewModel) {
-      gameViewModel.addLog(`Traveling to: ${location.name}`, 'travel');
+    if (gameController) {
+      gameController.addLog(`Traveling to: ${location.name}`, 'travel');
     }
   };
 

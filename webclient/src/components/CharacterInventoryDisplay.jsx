@@ -2,32 +2,32 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function PlayerItems({ gameViewModel }) {
+export default function CharacterInventoryDisplay({ gameController }) {
   const [playerItems, setPlayerItems] = useState([]);
   const rowRefs = useRef({});
 
   useEffect(() => {
-    if (gameViewModel) {
+    if (gameController) {
       // Subscribe to state changes
-      const unsubscribe = gameViewModel.subscribe((state) => {
+      const unsubscribe = gameController.subscribe((state) => {
         setPlayerItems(state.inventory.items);
       });
 
       // Initialize with current data
-      setPlayerItems(gameViewModel.getInventoryItems());
+      setPlayerItems(gameController.getInventoryItems());
 
       return unsubscribe;
     }
-  }, [gameViewModel]);
+  }, [gameController]);
 
   const handleRowClick = (e, item) => {
     e.preventDefault();
     // Add the ItemStackWindow to the windowModals
-    if (gameViewModel) {
-      gameViewModel.setWindowModal({
+    if (gameController) {
+      gameController.setWindowModal({
         type: 'itemStack',
         item: item,
-        gameViewModel: gameViewModel
+        gameController: gameController
       });
     }
   };

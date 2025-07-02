@@ -1,12 +1,13 @@
-/** @import { GameViewModel } from '@/game/GameViewModel' */
+/** @import { GameController } from '@/game/GameController' */
 import { redirect } from 'next/navigation';
 import PacketType from './PacketType'
+import { PacketFactory } from './PacketFactory';
 
 const NetworkController = (() => {
 
 	let ready = false
 
-	/** @type {GameViewModel} */
+	/** @type {GameController} */
 	let viewModel = null
 
 	/**
@@ -247,7 +248,7 @@ const NetworkController = (() => {
 		onError: () => {},
 		onSuccess: () => {},
 		initSocket,
-		setViewModel: (/** @type {GameViewModel} */value) => { viewModel = value },
+		setViewModel: (/** @type {GameController} */value) => { viewModel = value },
 		isTokenValid: null,
 		setReady: (value) => {
 			ready = value;

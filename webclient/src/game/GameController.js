@@ -1,7 +1,7 @@
 import { NetworkController } from './NetworkController';
 import { TimeController } from './TimeController';
 
-export class GameViewModel {
+export class GameController {
 	constructor() {
 		// Initialize TimeController first
 		this.timeController = new TimeController();
@@ -277,5 +277,15 @@ export class GameViewModel {
 	setWindowModal(modal) {
 		this.state.windowModals = [modal];
 		this.notifySubscribers();
+	}
+
+	// Task Management Methods
+	setTask(task) {
+		this.state.task = task;
+		this.notifySubscribers();
+	}
+
+	getTask() {
+		return this.state.task;
 	}
 } 

@@ -146,45 +146,45 @@ export default class ItemStackWindow extends ModalWindow {
 	}
 
 	handleUseItem() {
-		const { item, gameViewModel } = this.props;
-		if (gameViewModel && item) {
-			gameViewModel.updateItemCount(item.id, item.count - 1);
-			gameViewModel.addLog(`Used ${item.name}`, 'action');
-			this.onClose(this);
+		const { item, gameController } = this.props;
+		if (gameController && item) {
+			gameController.updateItemCount(item.id, item.count - 1);
+			gameController.addLog(`Used ${item.name}`, 'action');
 		}
+		this.onClose();
 	}
 
 	handleEquipItem() {
-		const { item, gameViewModel } = this.props;
-		if (gameViewModel && item) {
-			gameViewModel.addLog(`Equipped ${item.name}`, 'equipment');
-			this.onClose(this);
+		const { item, gameController } = this.props;
+		if (gameController && item) {
+			gameController.addLog(`Equipped ${item.name}`, 'equipment');
 		}
+		this.onClose();
 	}
 
 	handleExamineItem() {
-		const { item, gameViewModel } = this.props;
-		if (gameViewModel && item) {
-			gameViewModel.addLog(`Examined ${item.name}`, 'examine');
-			this.onClose(this);
+		const { item, gameController } = this.props;
+		if (gameController && item) {
+			gameController.addLog(`Examined ${item.name}`, 'examine');
 		}
+		this.onClose();
 	}
 
 	handleDropItem() {
-		const { item, gameViewModel } = this.props;
-		if (gameViewModel && item) {
-			gameViewModel.updateItemCount(item.id, item.count - 1);
-			gameViewModel.addLog(`Dropped ${item.name}`, 'action');
-			this.onClose(this);
+		const { item, gameController } = this.props;
+		if (gameController && item) {
+			gameController.updateItemCount(item.id, item.count - 1);
+			gameController.addLog(`Dropped ${item.name}`, 'action');
 		}
+		this.onClose();
 	}
 
 	handleDropAllItems() {
-		const { item, gameViewModel } = this.props;
-		if (gameViewModel && item) {
-			gameViewModel.removeInventoryItem(item.id);
-			gameViewModel.addLog(`Dropped all ${item.name}`, 'action');
-			this.onClose(this);
+		const { item, gameController } = this.props;
+		if (gameController && item) {
+			gameController.removeInventoryItem(item.id);
+			gameController.addLog(`Dropped all ${item.name}`, 'action');
 		}
+		this.onClose();
 	}
 } 
