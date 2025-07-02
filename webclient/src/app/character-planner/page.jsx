@@ -20,6 +20,10 @@ export default function CharacterPlanner() {
 	const [gameController] = useState(() => new GameController());
 	const [state, setState] = useState(gameController.state);
 	
+	const sampleStats = [
+		{ id: 0, name: "Name", value: "Antonio Margheriti" }
+	]
+
 	useEffect(() => {
 		NetworkController.setViewModel(gameController);
 		NetworkController.setReady(true);
@@ -46,42 +50,15 @@ export default function CharacterPlanner() {
 		
 	}, []);
 
-	const [activeView, setActiveView] = useState('location');
 	const [leftPanel, setLeftPanel] = useState('inventory');
 
 	const renderMainContent = () => {
-		switch (activeView) {
-			case 'location':
-				return (
-					<div className="flex flex-col h-full min-h-0">
-						<LocationDisplay gameController={gameController} />
-						<ActivityLogDisplay gameController={gameController} />
-					</div>
-				);
-			case 'skills':
-				return (
-					<div className="p-4 text-center text-gray-400">
-						<h2 className="text-lg font-bold mb-4">Active Skills</h2>
-						<p>Skill gems and their configurations will be shown here.</p>
-					</div>
-				);
-			case 'passives':
-				return (
-					<div className="p-4 text-center text-gray-400">
-						<h2 className="text-lg font-bold mb-4">Passive Skill Tree</h2>
-						<p>Passive skill tree visualization will be displayed here.</p>
-					</div>
-				);
-			case 'equipment':
-				return (
-					<div className="p-4 text-center text-gray-400">
-						<h2 className="text-lg font-bold mb-4">Equipment</h2>
-						<p>Character equipment and item details will be shown here.</p>
-					</div>
-				);
-			default:
-				return null;
-		}
+		return (
+			<div className="flex flex-col h-full min-h-0">
+				<LocationDisplay gameController={gameController} />
+				<ActivityLogDisplay gameController={gameController} />
+			</div>
+		);
 	};
 
 	const renderLeftPanel = () => {
@@ -89,7 +66,7 @@ export default function CharacterPlanner() {
 			case 'inventory':
 				return <CharacterInventoryDisplay gameController={gameController} />;
 			case 'stats':
-				return <CharacterStatsDisplay />;
+				return <CharacterStatsDisplay stats={ sampleStats } />;
 			case 'list':
 				return <PlayerListDisplay />;
 			case 'other':
@@ -134,7 +111,7 @@ export default function CharacterPlanner() {
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 								}`}
 							>
-								Player Stats
+								Stats
 							</button>
 							<button
 								onClick={() => setLeftPanel('list')}
@@ -144,7 +121,7 @@ export default function CharacterPlanner() {
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 								}`}
 							>
-								Player List
+								Nearby characters
 							</button>
 							<button
 								onClick={() => setLeftPanel('other')}
