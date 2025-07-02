@@ -70,19 +70,19 @@ export default function CharacterInventoryDisplay({ gameController }) {
     <div
       className="flex-1 flex flex-col h-full min-h-0"
     >
-      <div className="flex-shrink-0 p-1">
-        <h2 className="text-sm font-bold text-white mb-1">Inventory</h2>
+      <div className="flex-shrink-0">
+        <h2 className="text-sm font-bold text-white mb-1 pl-2 pt-2 pr-2">Inventory</h2>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-600">
-              <th className="py-0.5 px-1 text-left w-6"></th>
-              <th className="py-0.5 px-1 text-left">
+            <tr className="border-gray-600">
+              <th className="pl-2 py-0.5 px-1 text-left w-6"></th>
+              <th className="py-0.5 px-1 text-left w-36">
                 <span className="text-gray-400 text-[9px] font-bold">Name</span>
               </th>
               <th className="py-0.5 px-1 text-right">
                 <span className="text-gray-400 text-[9px] font-bold">Weight</span>
               </th>
-              <th className="py-0.5 px-1 text-right">
+              <th className="pr-2 py-0.5 px-1 text-right">
                 <span className="text-gray-400 text-[9px] font-bold">Count</span>
               </th>
             </tr>
